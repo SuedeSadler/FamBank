@@ -3,6 +3,11 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from .models import Group
 
+
+class AddMemberForm(forms.Form):
+    user = forms.ModelChoiceField(queryset=User.objects.all(), label="Select User to Add")
+
+
 class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(required=True)
 

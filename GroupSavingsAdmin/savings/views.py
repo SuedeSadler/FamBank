@@ -6,6 +6,25 @@ from django.contrib.auth import login
 from .forms import CustomUserCreationForm
 from .forms import GroupCreationForm
 from django.db.models import Sum
+from .forms import AddMemberForm
+
+@login_required
+def add_member(request, group_id):
+    group = get_object_or_404(Group, id=group_id)
+
+    if request.user != group.manager:
+        return redirect('group_detail', group_id=group_id)  # Only the manager can add members
+
+    if request.method == 'POST':
+        form = AddMemberForm(request.POST)
+        if form.is_valid():
+            user = form.cleaned_data['user']
+            group.members.add(user)
+            return redirect('group_detail', group_id=group_id)
+    else:
+        form = AddMemberForm()
+
+    return render(request, 'savings/add_member.html', {'form': form, 'group': group})
 
 def homepage(request):
     return render(request, 'savings/homepage.html')
@@ -15,7 +34,9 @@ from django.db.models import Q
 @login_required
 def dashboard(request):
     # Fetch groups where the user is either the manager or a member
-    groups = Group.objects.filter(Q(manager=request.user) | Q(contributions__member=request.user)).distinct()
+    groups = Group.objects.filter(
+        Q(manager=request.user) | Q(members=request.user)
+    ).distinct()
 
     # Fetch all contributions made by the logged-in user
     contributions = Contribution.objects.filter(member=request.user)
@@ -24,7 +45,7 @@ def dashboard(request):
         'groups': groups,
         'contributions': contributions,
     }
-    
+
     return render(request, 'savings/dashboard.html', context)
 
 

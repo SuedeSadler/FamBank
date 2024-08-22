@@ -4,6 +4,10 @@
 <h2>{{ group.name }}</h2>
 <p>{{ group.description }}</p>
 
+{% if user == group.manager %}
+    <a href="{% url 'add_member' group.id %}">Add Member</a>
+{% endif %}
+
 <h3>Total Contributions: ${{ total_contributions }}</h3>
 
 <h4>Member Contributions</h4>
