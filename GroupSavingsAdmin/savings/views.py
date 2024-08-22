@@ -7,6 +7,49 @@ from .forms import CustomUserCreationForm
 from .forms import GroupCreationForm
 from django.db.models import Sum
 from .forms import AddMemberForm
+from django.db.models import Q
+from .forms import InvitationForm
+from .models import Invitation
+
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from .models import Invitation
+
+@login_required
+def respond_invitation(request, invitation_id):
+    invitation = get_object_or_404(Invitation, id=invitation_id, user=request.user)
+
+    if request.method == 'POST':
+        if request.POST.get('action') == 'accept':
+            invitation.status = 'Accepted'
+            invitation.group.members.add(request.user)  # Add the user to the group
+        else:
+            invitation.status = 'Declined'
+        invitation.save()
+        return redirect('dashboard')
+
+    return redirect('dashboard')
+
+
+@login_required
+def send_invitation(request, group_id):
+    group = get_object_or_404(Group, id=group_id)
+
+    if request.user != group.manager:
+        return redirect('group_detail', group_id=group_id)  # Only the manager can send invitations
+
+    if request.method == 'POST':
+        form = InvitationForm(request.POST)
+        if form.is_valid():
+            invitation = form.save(commit=False)
+            invitation.group = group
+            invitation.invited_by = request.user
+            invitation.save()
+            return redirect('group_detail', group_id=group_id)
+    else:
+        form = InvitationForm()
+
+    return render(request, 'savings/send_invitation.html', {'form': form, 'group': group})
 
 @login_required
 def add_member(request, group_id):
@@ -29,7 +72,7 @@ def add_member(request, group_id):
 def homepage(request):
     return render(request, 'savings/homepage.html')
 
-from django.db.models import Q
+
 
 @login_required
 def dashboard(request):
@@ -41,13 +84,16 @@ def dashboard(request):
     # Fetch all contributions made by the logged-in user
     contributions = Contribution.objects.filter(member=request.user)
 
+    # Fetch pending invitations for the logged-in user
+    invitations = Invitation.objects.filter(user=request.user, status='Pending')
+
     context = {
         'groups': groups,
         'contributions': contributions,
+        'invitations': invitations,
     }
 
     return render(request, 'savings/dashboard.html', context)
-
 
 def register(request):
     if request.method == "POST":

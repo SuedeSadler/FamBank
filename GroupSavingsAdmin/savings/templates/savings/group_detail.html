@@ -4,8 +4,9 @@
 <h2>{{ group.name }}</h2>
 <p>{{ group.description }}</p>
 
+
 {% if user == group.manager %}
-    <a href="{% url 'add_member' group.id %}">Add Member</a>
+    <a href="{% url 'send_invitation' group.id %}">Invite Members</a>
 {% endif %}
 
 <h3>Total Contributions: ${{ total_contributions }}</h3>

@@ -1,0 +1,19 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+<h2>Group Invitations</h2>
+<ul>
+    {% for invitation in invitations %}
+    <li>
+        {{ invitation.group.name }} - Invited by {{ invitation.invited_by.username }} 
+        <form method="post" action="{% url 'respond_invitation' invitation.id %}">
+            {% csrf_token %}
+            <button name="action" value="accept">Accept</button>
+            <button name="action" value="decline">Decline</button>
+        </form>
+    </li>
+    {% empty %}
+    <li>You have no pending invitations.</li>
+    {% endfor %}
+</ul>
+{% endblock %}

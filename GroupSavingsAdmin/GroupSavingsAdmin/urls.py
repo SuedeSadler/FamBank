@@ -8,16 +8,20 @@ from savings.views import (
     create_group,
     group_detail,
     add_member,
+    send_invitation,
+    respond_invitation,
 )
 
 urlpatterns = [
-    path('', homepage, name='homepage'),  # Root URL
-    path('admin/', admin.site.urls),  # Admin interface
-    path('register/', register, name='register'),  # User registration
-    path('login/', auth_views.LoginView.as_view(template_name='savings/login.html'), name='login'),  # Login
-    path('logout/', auth_views.LogoutView.as_view(), name='logout'),  # Logout
-    path('dashboard/', dashboard, name='dashboard'),  # User dashboard
-    path('group/create/', create_group, name='create_group'),  # Group creation
-    path('group/<int:group_id>/', group_detail, name='group_detail'),  # Group details
-    path('group/<int:group_id>/add_member/', add_member, name='add_member'),  # Add member to group
+       path('register/', register, name='register'),
+    path('admin/', admin.site.urls),
+    path('', homepage, name='homepage'),
+    path('group/create/', create_group, name='create_group'),
+    path('group/<int:group_id>/', group_detail, name='group_detail'),
+    path('group/<int:group_id>/add_member/', add_member, name='add_member'),
+    path('group/<int:group_id>/send_invitation/', send_invitation, name='send_invitation'),
+    path('invitations/respond/<int:invitation_id>/', respond_invitation, name='respond_invitation'),
+    path('login/', auth_views.LoginView.as_view(template_name='savings/login.html'), name='login'),
+    path('logout/', auth_views.LogoutView.as_view(), name='logout'),
+    path('dashboard/', dashboard, name='dashboard'),
 ]

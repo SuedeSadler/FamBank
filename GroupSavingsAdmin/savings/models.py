@@ -10,6 +10,16 @@ class Group(models.Model):
 
     def __str__(self):
         return self.name
+    
+class Invitation(models.Model):
+    group = models.ForeignKey(Group, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    invited_by = models.ForeignKey(User, related_name='sent_invitations', on_delete=models.CASCADE)
+    status = models.CharField(max_length=20, choices=[('Pending', 'Pending'), ('Accepted', 'Accepted'), ('Declined', 'Declined')], default='Pending')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Invitation to {self.user.username} for {self.group.name}"
 
 class Contribution(models.Model):
     group = models.ForeignKey(Group, related_name='contributions', on_delete=models.CASCADE)
