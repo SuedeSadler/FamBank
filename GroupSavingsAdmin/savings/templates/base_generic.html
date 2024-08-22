@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {% load static %}  <!-- Add this line to load the static tag -->
+    <title>{% block title %}Group Savings App{% endblock %}</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <header>
+        <h1>Group Savings App</h1>
+        {% if user.is_authenticated %}
+        <p>Welcome, {{ user.username }}! 
+            <form id="logout-form" action="{% url 'logout' %}" method="post" style="display: none;">
+                {% csrf_token %}
+            </form>
+            <a href="#" onclick="document.getElementById('logout-form').submit();">Logout</a> |
+            <a href="{% url 'dashboard' %}">Dashboard</a> 
+            <a href="{% url 'create_group' %}">Create a New Group</a>
+        </p>
+        {% else %}
+            <p><a href="{% url 'login' %}">Login</a> | <a href="{% url 'register' %}">Register</a></p>
+        {% endif %}
+    
+    </header>
+
+    <div class="content">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Group Savings App</p>
+    </footer>
+</body>
+</html>
