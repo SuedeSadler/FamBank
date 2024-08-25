@@ -1,0 +1,29 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+
+
+.sidebar .sidebar-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.sidebar .nav-link {
+    color: #333;
+    padding: 10px 20px;
+    display: block;
+    transition: background-color 0.3s ease;
+}
+
+.sidebar .nav-link:hover {
+    background-color: #e2e6ea;
+}
+
+
+.navbar .dropdown-menu {
+    right: 0;
+    left: auto;
+}

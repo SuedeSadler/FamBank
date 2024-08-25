@@ -16,6 +16,10 @@ from django.contrib.auth.decorators import login_required
 from .models import Invitation
 
 @login_required
+def profile(request):
+    return render(request, 'savings/profile.html')
+
+@login_required
 def respond_invitation(request, invitation_id):
     invitation = get_object_or_404(Invitation, id=invitation_id, user=request.user)
 

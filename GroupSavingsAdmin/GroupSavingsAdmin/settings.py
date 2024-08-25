@@ -27,6 +27,17 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+# settings.py
+
+STATIC_URL = '/static/'
+
+# Points to the static directories within apps
+STATICFILES_DIRS = [
+    # If you have additional static files in a global directory, you can add them here
+]
+
+# Directory where static files will be collected for deployment
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Application definition
 

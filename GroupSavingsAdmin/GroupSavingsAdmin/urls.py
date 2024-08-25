@@ -10,10 +10,12 @@ from savings.views import (
     add_member,
     send_invitation,
     respond_invitation,
+    profile,
 )
 
 urlpatterns = [
-       path('register/', register, name='register'),
+    path('profile/', profile, name='profile'),
+    path('register/', register, name='register'),
     path('admin/', admin.site.urls),
     path('', homepage, name='homepage'),
     path('group/create/', create_group, name='create_group'),
