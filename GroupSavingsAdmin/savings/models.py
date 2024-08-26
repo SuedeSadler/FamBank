@@ -25,7 +25,7 @@ class Contribution(models.Model):
     group = models.ForeignKey(Group, related_name='contributions', on_delete=models.CASCADE)
     member = models.ForeignKey(User, on_delete=models.CASCADE)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
-    date = models.DateField()
+    date = models.DateField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.member.username} - {self.amount}"

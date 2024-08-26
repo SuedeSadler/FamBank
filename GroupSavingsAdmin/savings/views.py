@@ -10,10 +10,35 @@ from .forms import AddMemberForm
 from django.db.models import Q
 from .forms import InvitationForm
 from .models import Invitation
-
+from .forms import ContributionForm
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from .models import Invitation
+from datetime import date
+
+
+
+@login_required
+def add_contribution(request, group_id):
+    group = get_object_or_404(Group, id=group_id)
+
+    # Check if the current user is the owner of the group
+    if request.user != group.manager:
+        return redirect('group_detail', group_id=group_id)
+
+    if request.method == 'POST':
+        form = ContributionForm(request.POST, group=group)
+        if form.is_valid():
+           contribution = form.save(commit=False)
+           contribution.group = group
+           contribution.member == form.cleaned_data['member']
+           contribution.date = date.today()
+           contribution.save()
+           return redirect('group_detail', group_id=group_id)
+    else:
+        form = ContributionForm(group=group)
+
+    return render(request, 'savings/add_contribution.html', {'form': form, 'group': group})
 
 @login_required
 def profile(request):
@@ -129,11 +154,15 @@ def group_detail(request, group_id):
     group = get_object_or_404(Group, id=group_id)
     contributions = Contribution.objects.filter(group=group)
 
+      # Calculate total contributions by member
+    contributions_by_member = contributions.values('member__username').annotate(total=Sum('amount'))
+
     total_contributions = contributions.aggregate(Sum('amount'))['amount__sum'] or 0
 
     context = {
         'group': group,
         'contributions': contributions,
+        'contributions_by_member': contributions_by_member,
         'total_contributions': total_contributions,
     }
 

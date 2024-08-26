@@ -5,6 +5,7 @@ from .models import Group
 from .models import Invitation
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, Row, Column, Field
+from .models import Contribution, User, Group
 
 
 class InvitationForm(forms.ModelForm):
@@ -72,3 +73,22 @@ class GroupCreationForm(forms.ModelForm):
         model = Group
         fields = ['name', 'description']
 
+class ContributionForm(forms.ModelForm):
+    member = forms.ModelChoiceField(queryset=User.objects.all(), label="Member")
+
+    class Meta:
+        model = Contribution
+        fields = ['member', 'amount']
+
+    def __init__(self, *args, **kwargs):
+        group = kwargs.pop('group', None)
+        super(ContributionForm, self).__init__(*args, **kwargs)
+        if group:
+             self.fields['member'].queryset = group.members.all() | User.objects.filter(id=group.manager.id)
+
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Field('member', css_class='form-control'),
+            Field('amount', css_class='form-control'),
+        )
+        self.helper.add_input(Submit('submit', 'Add Contribution', css_class='btn btn-primary'))

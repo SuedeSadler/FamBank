@@ -11,6 +11,7 @@ from savings.views import (
     send_invitation,
     respond_invitation,
     profile,
+    add_contribution,
 )
 
 urlpatterns = [
@@ -26,4 +27,5 @@ urlpatterns = [
     path('login/', auth_views.LoginView.as_view(template_name='savings/login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     path('dashboard/', dashboard, name='dashboard'),
+    path('group/<int:group_id>/add_contribution/', add_contribution, name='add_contribution'),
 ]
