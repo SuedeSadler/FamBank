@@ -5,7 +5,7 @@ from .models import Group, Contribution
 from django.contrib.auth import login
 from .forms import CustomUserCreationForm
 from .forms import GroupCreationForm
-from django.db.models import Sum
+from django.db.models import Sum, Value, DecimalField
 from .forms import AddMemberForm
 from django.db.models import Q
 from .forms import InvitationForm
@@ -15,6 +15,8 @@ from django.shortcuts import get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from .models import Invitation
 from datetime import date
+from django.db.models.functions import Coalesce
+from django.contrib.auth.models import User
 
 
 
@@ -152,16 +154,26 @@ def create_group(request):
 @login_required
 def group_detail(request, group_id):
     group = get_object_or_404(Group, id=group_id)
-    contributions = Contribution.objects.filter(group=group)
+    
+    # Fetch all members of the group, including the manager
+    members = group.members.all() | User.objects.filter(id=group.manager.id)
 
-      # Calculate total contributions by member
-    contributions_by_member = contributions.values('member__username').annotate(total=Sum('amount'))
+    # Get contributions and include members with no contributions
+    contributions_by_member = []
+    for member in members:
+        total_contributed = Contribution.objects.filter(group=group, member=member).aggregate(
+            total=Coalesce(Sum('amount'), Value(0), output_field=DecimalField())
+        )['total']
+        contributions_by_member.append({
+            'member': member.username,
+            'total': total_contributed
+        })
 
-    total_contributions = contributions.aggregate(Sum('amount'))['amount__sum'] or 0
+    total_contributions = Contribution.objects.filter(group=group).aggregate(Sum('amount'))['amount__sum'] or 0
 
     context = {
         'group': group,
-        'contributions': contributions,
+        'contributions': Contribution.objects.filter(group=group),
         'contributions_by_member': contributions_by_member,
         'total_contributions': total_contributions,
     }

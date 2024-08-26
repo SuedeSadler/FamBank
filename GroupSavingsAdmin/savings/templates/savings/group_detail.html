@@ -55,55 +55,70 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var ctx = document.getElementById('contributionsPieChart').getContext('2d');
-        var contributionsPieChart = new Chart(ctx, {
-            type: 'pie',
-            data: {
-                labels: [
+    
+    function generateColors(numColors) {
+        const colors = [];
+        for (let i = 0; i < numColors; i++) {
+            const r = Math.floor(Math.random() * 255);
+            const g = Math.floor(Math.random() * 255);
+            const b = Math.floor(Math.random() * 255);
+            colors.push(`rgba(${r}, ${g}, ${b}, 0.2)`);  // Background color
+        }
+        return colors;
+    }
+
+    function generateBorderColors(numColors) {
+        const colors = [];
+        for (let i = 0; i < numColors; i++) {
+            const r = Math.floor(Math.random() * 255);
+            const g = Math.floor(Math.random() * 255);
+            const b = Math.floor(Math.random() * 255);
+            colors.push(`rgba(${r}, ${g}, ${b}, 1)`);  // Border color
+        }
+        return colors;
+    }
+
+    // Number of unique members
+    var numMembers = {{ contributions_by_member|length }};
+
+    // Generate the colors dynamically
+    var backgroundColors = generateColors(numMembers);
+    var borderColors = generateBorderColors(numMembers);
+
+    var ctx = document.getElementById('contributionsPieChart').getContext('2d');
+    var contributionsPieChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: [
+                {% for item in contributions_by_member %}
+                    '{{ item.member }}',
+                {% endfor %}
+            ],
+            datasets: [{
+                label: 'Contributions',
+                data: [
                     {% for item in contributions_by_member %}
-                        '{{ item.member__username }}',
+                        {{ item.total }},
                     {% endfor %}
                 ],
-                datasets: [{
-                    label: 'Contributions',
-                    data: [
-                        {% for item in contributions_by_member %}
-                            {{ item.total }},
-                        {% endfor %}
-                    ],
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.2)',
-                        'rgba(54, 162, 235, 0.2)',
-                        'rgba(255, 206, 86, 0.2)',
-                        'rgba(75, 192, 192, 0.2)',
-                        'rgba(153, 102, 255, 0.2)',
-                        'rgba(255, 159, 64, 0.2)'
-                    ],
-                    borderColor: [
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 206, 86, 1)',
-                        'rgba(75, 192, 192, 1)',
-                        'rgba(153, 102, 255, 1)',
-                        'rgba(255, 159, 64, 1)'
-                    ],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'top',
-                    },
-                    tooltip: {
-                        enabled: true
-                    }
+                backgroundColor: backgroundColors,
+                borderColor: borderColors,
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                tooltip: {
+                    enabled: true
                 }
             }
-        });
+        }
     });
+</script>
 </script>
 {% endblock %}
 
