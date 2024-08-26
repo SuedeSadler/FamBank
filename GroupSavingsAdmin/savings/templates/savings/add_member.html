@@ -1,10 +1,11 @@
 {% extends "base_generic.html" %}
+{% load crispy_forms_tags %} 
 
 {% block content %}
 <h2>Add a Member to {{ group.name }}</h2>
 <form method="post">
     {% csrf_token %}
-    {{ form.as_p }}
+    {{ form|crispy }}
     <button type="submit">Add Member</button>
 </form>
 
