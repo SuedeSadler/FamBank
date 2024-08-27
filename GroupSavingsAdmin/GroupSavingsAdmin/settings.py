@@ -89,16 +89,23 @@ WSGI_APPLICATION = 'GroupSavingsAdmin.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+import os
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'ropuapp-database',  # Replace with your database name
-        'USER': 'tbqmnwxwou',  # Replace with your database username
-        'PASSWORD': 'pTytKF$ud4LbuVul',  # Replace with your database password
-        'HOST': 'ropuapp-server.postgres.database.azure.com',  # Replace with your database host (e.g., your_server_name.postgres.database.azure.com)
-        'PORT': '5432',  # Default port for PostgreSQL
+        'ENGINE': 'django.db.backends.sql_server.pyodbc',
+        'NAME': os.getenv('DB_NAME', 'default_db_name'),  # Use a default value if the environment variable is not set
+        'USER': os.getenv('DB_USER', 'default_db_user'),
+        'PASSWORD': os.getenv('DB_PASSWORD', 'default_db_password'),
+        'HOST': os.getenv('DB_HOST', 'default_db_host'),
+        'PORT': os.getenv('DB_PORT', '1433'),  # SQL Server typically uses port 1433
+        'OPTIONS': {
+            'driver': os.getenv('DB_DRIVER', 'ODBC Driver 17 for SQL Server'),
+            'extra_params': 'TrustServerCertificate=yes;Encrypt=yes;',  # Ensures SSL/TLS encryption
+        },
     }
 }
+
 
 
 # Password validation
