@@ -34,15 +34,13 @@ jobs:
       - name: Zip artifact for deployment
         run: |
           cd GroupSavingsAdmin
-          zip release.zip ./* -r
+          zip -r release.zip .
 
       - name: Upload artifact for deployment jobs
         uses: actions/upload-artifact@v4
         with:
-          name: python-app
-          path: |
-            cd GroupSavingsAdmin
-            !venv/
+          name: Savings  # Use this name in download artifact as well
+          path: release.zip  # This should match the file you zipped
 
   deploy:
     runs-on: ubuntu-latest
@@ -57,10 +55,10 @@ jobs:
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
         with:
-          name: python-app
+          name: Savings  # This should match the name used in upload artifact
 
       - name: Unzip artifact for deployment
-        run: unzip your_project_folder/release.zip # Ensure this path is correct
+        run: unzip release.zip
 
       - name: Login to Azure
         uses: azure/login@v2
