@@ -91,8 +91,12 @@ WSGI_APPLICATION = 'GroupSavingsAdmin.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'ropuapp-database',  # Replace with your database name
+        'USER': 'tbqmnwxwou',  # Replace with your database username
+        'PASSWORD': 'pTytKF$ud4LbuVul',  # Replace with your database password
+        'HOST': 'ropuapp-server.postgres.database.azure.com',  # Replace with your database host (e.g., your_server_name.postgres.database.azure.com)
+        'PORT': '5432',  # Default port for PostgreSQL
     }
 }
 
