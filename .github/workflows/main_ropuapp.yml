@@ -20,10 +20,9 @@ jobs:
 
       - name: Create and start virtual environment
         run: |
-          cd GroupSavingsAdmin
           python -m venv venv
           source venv/bin/activate
-
+      
       - name: Install dependencies
         run: |
           cd GroupSavingsAdmin
@@ -34,13 +33,13 @@ jobs:
       - name: Zip artifact for deployment
         run: |
           cd GroupSavingsAdmin
-          zip -r ../release.zip .  # Go up one directory and zip the project
+          zip -r ../release.zip ./*
 
       - name: Upload artifact for deployment jobs
         uses: actions/upload-artifact@v4
         with:
-          name: my-python-app-artifact  # Use your preferred name here
-          path: release.zip  # Upload the zipped file
+          name: my-python-app-artifact
+          path: release.zip
 
   deploy:
     runs-on: ubuntu-latest
@@ -49,13 +48,13 @@ jobs:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
     permissions:
-      id-token: write  # Required for requesting the JWT
+      id-token: write #This is required for requesting the JWT
 
     steps:
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
         with:
-          name: my-python-app-artifact  # Ensure this matches the upload name
+          name: my-python-app-artifact
 
       - name: Unzip artifact for deployment
         run: unzip release.zip
@@ -63,9 +62,9 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_4C678A52B1DA4DFD854F533F23663DBD }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_9C610EB1A3E04C1A88D77820475C7BDB }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_72DB860CD2614B539B06168B97884E3D }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID }}
 
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v3
