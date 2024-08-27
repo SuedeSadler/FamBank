@@ -23,24 +23,24 @@ jobs:
           cd GroupSavingsAdmin
           python -m venv venv
           source venv/bin/activate
-      
+
       - name: Install dependencies
         run: |
           cd GroupSavingsAdmin
           pip install -r requirements.txt
-        
+
       # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
 
       - name: Zip artifact for deployment
         run: |
           cd GroupSavingsAdmin
-          zip -r release.zip .
+          zip -r ../release.zip .  # Go up one directory and zip the project
 
       - name: Upload artifact for deployment jobs
         uses: actions/upload-artifact@v4
         with:
-          name: Savings  # Use this name in download artifact as well
-          path: release.zip  # This should match the file you zipped
+          name: my-python-app-artifact  # Use your preferred name here
+          path: release.zip  # Upload the zipped file
 
   deploy:
     runs-on: ubuntu-latest
@@ -49,13 +49,13 @@ jobs:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
     permissions:
-      id-token: write #This is required for requesting the JWT
+      id-token: write  # Required for requesting the JWT
 
     steps:
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
         with:
-          name: Savings  # This should match the name used in upload artifact
+          name: my-python-app-artifact  # Ensure this matches the upload name
 
       - name: Unzip artifact for deployment
         run: unzip release.zip
