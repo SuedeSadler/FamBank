@@ -37,6 +37,9 @@ CSRF_TRUSTED_ORIGINS = [
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'savings', 'static'),
+]
 
 # Media files (uploads)
 MEDIA_URL = '/media/'
@@ -72,7 +75,7 @@ ROOT_URLCONF = 'GroupSavingsAdmin.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'savings', 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
