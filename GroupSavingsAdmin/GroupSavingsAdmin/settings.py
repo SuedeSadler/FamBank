@@ -93,18 +93,19 @@ import os
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sql_server.pyodbc',
-        'NAME': os.getenv('DB_NAME', 'default_db_name'),  # Use a default value if the environment variable is not set
-        'USER': os.getenv('DB_USER', 'default_db_user'),
-        'PASSWORD': os.getenv('DB_PASSWORD', 'default_db_password'),
-        'HOST': os.getenv('DB_HOST', 'default_db_host'),
-        'PORT': os.getenv('DB_PORT', '1433'),  # SQL Server typically uses port 1433
+        'ENGINE': 'mssql',
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'HOST': os.getenv('DB_HOST'),
+        'PORT': os.getenv('DB_PORT', ''),  # SQL Server typically uses port 1433
         'OPTIONS': {
             'driver': os.getenv('DB_DRIVER', 'ODBC Driver 17 for SQL Server'),
-            'extra_params': 'TrustServerCertificate=yes;Encrypt=yes;',  # Ensures SSL/TLS encryption
+            'extra_params': 'TrustServerCertificate=yes;Encrypt=yes;',
         },
     }
 }
+
 
 
 
