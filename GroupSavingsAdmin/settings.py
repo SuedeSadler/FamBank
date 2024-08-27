@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,20 +26,21 @@ SECRET_KEY = 'django-insecure-ym3*n+5#xvqm8ykixwgma8j)rq68e$ta2d_36boug7a2*c_mw7
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['ropuapp-ekbhcfaseqf2gjh3.australiacentral-01.azurewebsites.net']
+ALLOWED_HOSTS = ['*']
 
-# settings.py
 
+# Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-# Points to the static directories within apps
+# Additional locations of static files
 STATICFILES_DIRS = [
-    # If you have additional static files in a global directory, you can add them here
+    os.path.join(BASE_DIR, 'static'),
 ]
 
-# Directory where static files will be collected for deployment
-STATIC_ROOT = BASE_DIR / "staticfiles"
-
+# Media files (uploads)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # Application definition
 
 INSTALLED_APPS = [
