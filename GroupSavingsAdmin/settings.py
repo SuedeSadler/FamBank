@@ -26,8 +26,12 @@ SECRET_KEY = 'django-insecure-ym3*n+5#xvqm8ykixwgma8j)rq68e$ta2d_36boug7a2*c_mw7
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['ropuapp-ekbhcfaseqf2gjh3.australiacentral-01.azurewebsites.net']
 
+CSRF_TRUSTED_ORIGINS = [
+    'https://ropuapp-ekbhcfaseqf2gjh3.australiacentral-01.azurewebsites.net',
+    # Add any other domains that should be trusted
+]
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
