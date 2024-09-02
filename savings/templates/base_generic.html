@@ -9,9 +9,13 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-    <!-- Sidebar -->
-    <div class="d-flex">
-        <nav class="sidebar bg-light">
+   <!-- Sidebar -->
+    <div class="offcanvas offcanvas-start bg-light" tabindex="-1" id="sidebar">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title">Menu</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
             <div class="sidebar-header">
                 <a href="#">
                     <img src="{% static 'savings/images/ropulogo.png' %}" alt="Logo" width="150" height="100">
@@ -30,7 +34,7 @@
             </ul>
             <ul class="nav flex-column">
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'create_group' %}">Contributionss</a>
+                    <a class="nav-link" href="{% url 'create_group' %}">Contributions</a>
                 </li>
             </ul>
             <ul class="nav flex-column">
@@ -56,45 +60,50 @@
                 </li>
             </ul>
             {% endif %}
-        </nav>
-
-        <!-- Main Content -->
-        <div class="content flex-grow-1">
-            <!-- Top Bar -->
-            <nav class="navbar navbar-light bg-light">
-                <div class="container-fluid">
-                    <div class="d-flex justify-content-end w-100">
-                        <div class="dropdown">
-                            {% if user.is_authenticated %}
-                            <a href="#" class="d-flex align-items-center text-decoration-none" id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false">
-                                <img src="{% static 'savings/images/user-placeholder.png' %}" alt="" width="32" height="32" class="rounded-circle me-2">
-                                <strong>{{ user.username }}</strong>
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownUser">
-                                
-                                <li class="dropdown-item">
-                                    <a class="nav-link" href="#" onclick="document.getElementById('logout-form').submit();">Logout</a>
-                                    <form id="logout-form" action="{% url 'logout' %}" method="post" style="display: none;">
-                                        {% csrf_token %}
-                                    </form>
-                                </li>
-                                <li><a class="dropdown-item" href="{% url 'profile' %}">Profile</a></li>
-                                {% endif %}
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </nav>
-
-            <div class="container-fluid">
-                {% block content %}
-                <!-- Dashboard Content Goes Here -->
-                {% endblock %}
-            </div>
         </div>
     </div>
 
+        <!-- Main Content -->
+    <div class="content flex-grow-1">
+        <!-- Top Bar -->
+        <nav class="navbar navbar-light bg-light">
+            <div class="container-fluid">
+                <!-- Hamburger button for small screens -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebar" aria-controls="sidebar">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="d-flex justify-content-end w-100">
+                    <div class="dropdown">
+                        {% if user.is_authenticated %}
+                        <a href="#" class="d-flex align-items-center text-decoration-none" id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img src="{% static 'savings/images/user-placeholder.png' %}" alt="" width="32" height="32" class="rounded-circle me-2">
+                            <strong>{{ user.username }}</strong>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownUser">
+                            <li class="dropdown-item">
+                                <a class="nav-link" href="#" onclick="document.getElementById('logout-form').submit();">Logout</a>
+                                <form id="logout-form" action="{% url 'logout' %}" method="post" style="display: none;">
+                                    {% csrf_token %}
+                                </form>
+                            </li>
+                            <li><a class="dropdown-item" href="{% url 'profile' %}">Profile</a></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container-fluid">
+            {% block content %}
+            <!-- Dashboard Content Goes Here -->
+            {% endblock %}
+        </div>
+    </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>    
 </body>
 </html>
