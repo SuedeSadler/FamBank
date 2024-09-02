@@ -7,7 +7,7 @@
 
 
 
-<div class="container">
+<div class="container-fluid">
     <div class="row justify-content-center align-items-center g-2">
         <div class="col-md-6 p-2">
             <div class="card border-primary mb-3" style="max-width: 25rem;">
@@ -72,28 +72,6 @@
         </div>
     </div>
 </div>
-
-
-
-<div class="container">
-    <div class="row justify-content-center align-items-center g-2">
-        <div class="col-sm-3">
-            {% if user == group.manager %}
-            <a href="{% url 'send_invitation' group.id %}" class="btn btn-outline-primary" >Invite Members</a>
-            {% endif %}
-        </div>
-        <div class="col-sm-3">
-            {% if user == group.manager %}
-            <a href="{% url 'add_contribution' group.id %}" class="btn btn-outline-primary">Add Contribution</a>
-            {% endif %}
-        </div>
-        <div class="col-sm-3">
-            <a href="{% url 'dashboard' %}" class="btn btn-outline-primary" >Back to Dashboard</a>
-        </div>
-    </div>
-</div>
-
-
 
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
