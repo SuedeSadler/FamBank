@@ -171,9 +171,12 @@ def group_detail(request, group_id):
 
     total_contributions = Contribution.objects.filter(group=group).aggregate(Sum('amount'))['amount__sum'] or 0
 
+    # Fetch contributions ordered by date descending
+    contributions = Contribution.objects.filter(group=group).order_by('-date')
+
     context = {
         'group': group,
-        'contributions': Contribution.objects.filter(group=group),
+        'contributions': contributions,  # This is where the contributions are passed
         'contributions_by_member': contributions_by_member,
         'total_contributions': total_contributions,
     }
