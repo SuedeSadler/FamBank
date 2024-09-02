@@ -18,7 +18,85 @@ body {
     transition: background-color 0.3s ease;
 }
 
+.sidebar .nav-link:hover {body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 250px;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: #7bb8f4;
+    padding-top: 20px;
+    transition: transform 0.3s ease; /* Smooth transition for offcanvas effect */
+}
+
+/* Hide sidebar on smaller screens and toggle with Bootstrap classes */
+@media (max-width: 991.98px) {
+    .sidebar {
+        transform: translateX(-100%); /* Hide sidebar offscreen */
+    }
+    .offcanvas-start.show .sidebar {
+        transform: translateX(0); /* Show sidebar when offcanvas is active */
+    }
+}
+
+.sidebar .sidebar-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.sidebar .nav-link {
+    color: #333;
+    padding: 10px 20px;
+    display: block;
+    transition: background-color 0.3s ease;
+}
+
 .sidebar .nav-link:hover {
+    background-color: #e2e6ea;
+}
+
+/* Content Area */
+.content {
+    margin-left: 250px; /* Same as sidebar width */
+    padding: 20px;
+    transition: margin-left 0.3s ease; /* Smooth transition for content shift */
+}
+
+@media (max-width: 991.98px) {
+    .content {
+        margin-left: 0; /* Reset margin on smaller screens */
+    }
+}
+
+/* Navbar */
+.navbar {
+    background-color: #2f5f90;
+    border-bottom: 1px solid #dee2e6;
+    z-index: 1;
+    position: fixed;
+    width: 100%;
+    transition: margin-left 0.3s ease; /* Smooth transition for navbar shift */
+}
+
+@media (min-width: 992px) {
+    .navbar {
+        margin-left: 250px; /* Align with the content area on larger screens */
+        width: calc(100% - 250px);
+    }
+}
+
+.navbar .dropdown-menu {
+    right: 0;
+    left: auto;
+}
+
     background-color: #e2e6ea;
 }
 
@@ -27,3 +105,5 @@ body {
     right: 0;
     left: auto;
 }
+
+

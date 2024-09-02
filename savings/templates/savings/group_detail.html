@@ -1,54 +1,97 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
-<h2>{{ group.name }}</h2>
-<p>{{ group.description }}</p>
+<h2></h2>
+<p></p>
 
 
-{% if user == group.manager %}
-    <a href="{% url 'send_invitation' group.id %}" class="btn btn-primary" >Invite Members</a>
-{% endif %}
 
-{% if user == group.manager %}
-    <a href="{% url 'add_contribution' group.id %}" class="btn btn-primary">Add Contribution</a>
-{% endif %}
-
-<a href="{% url 'dashboard' %}" class="btn btn-primary" >Back to Dashboard</a>
-
-<h3>Total Contributions: ${{ total_contributions }}</h3>
 
 <div class="container">
-    <div class="col-md-4">
-        <canvas id="contributionsPieChart" width="400" height="400"></canvas>
+    <div class="row justify-content-center align-items-center g-2">
+        <div class="col-md-6 p-2">
+            <div class="card border-primary mb-3" style="max-width: 25rem;">
+                <div class="card-header">Balance</div>
+                <div class="card-body">
+                <h4 class="card-title">{{ group.name }}</h4>
+                <p class="card-text">{{ group.description }}</p>
+                <h3 class="card-title">${{ total_contributions }}</h3>
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        {% if user == group.manager %}
+                        <a href="{% url 'send_invitation' group.id %}">Invite Members</a>
+                        {% endif %}
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        {% if user == group.manager %}
+                        <a class href="{% url 'add_contribution' group.id %}">Add Contribution</a>
+                        {% endif %} 
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-6 p-2">
+            <div class="card border-warning mb-3" style="max-width: 25rem;">
+                <div class="card-header">Contributions by Members</div>
+                <div class="p-2">
+                    <canvas id="contributionsPieChart" style="position: relative; height: 400px; width: 100%;"></canvas>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="col-md-4">
-        <h4>Member Contributions</h4>
-        <table>
-            <thead>
-                <tr>
-                    <th>Member</th>
-                    <th>Amount</th>
-                    <th>Date</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for contribution in contributions %}
-                <tr>
-                    <td>{{ contribution.member.username }}</td>
-                    <td>${{ contribution.amount }}</td>
-                    <td>{{ contribution.date }}</td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="3">No contributions yet.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <div class="row justify-content-center align-items-center g-2">
+        <div class="col-md-6 p-2">
+            <div class="card border-info mb-3">
+                <div class="card-header">
+                    Members Transactions
+                </div>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Member</th>
+                            <th>Amount</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for contribution in contributions %}
+                        <tr>
+                            <td>{{ contribution.member.username }}</td>
+                            <td>${{ contribution.amount }}</td>
+                            <td>{{ contribution.date }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="3">No contributions yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>  
+        </div>
     </div>
 </div>
 
 
+
+<div class="container">
+    <div class="row justify-content-center align-items-center g-2">
+        <div class="col-sm-3">
+            {% if user == group.manager %}
+            <a href="{% url 'send_invitation' group.id %}" class="btn btn-outline-primary" >Invite Members</a>
+            {% endif %}
+        </div>
+        <div class="col-sm-3">
+            {% if user == group.manager %}
+            <a href="{% url 'add_contribution' group.id %}" class="btn btn-outline-primary">Add Contribution</a>
+            {% endif %}
+        </div>
+        <div class="col-sm-3">
+            <a href="{% url 'dashboard' %}" class="btn btn-outline-primary" >Back to Dashboard</a>
+        </div>
+    </div>
+</div>
 
 
 
@@ -67,23 +110,13 @@
         return colors;
     }
 
-    function generateBorderColors(numColors) {
-        const colors = [];
-        for (let i = 0; i < numColors; i++) {
-            const r = Math.floor(Math.random() * 255);
-            const g = Math.floor(Math.random() * 255);
-            const b = Math.floor(Math.random() * 255);
-            colors.push(`rgba(${r}, ${g}, ${b}, 1)`);  // Border color
-        }
-        return colors;
-    }
 
     // Number of unique members
     var numMembers = {{ contributions_by_member|length }};
 
     // Generate the colors dynamically
     var backgroundColors = generateColors(numMembers);
-    var borderColors = generateBorderColors(numMembers);
+    var borderColors = generateColors(numMembers);
 
     var ctx = document.getElementById('contributionsPieChart').getContext('2d');
     var contributionsPieChart = new Chart(ctx, {
