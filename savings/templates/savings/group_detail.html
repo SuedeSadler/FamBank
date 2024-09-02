@@ -15,13 +15,25 @@
 
 <a href="{% url 'dashboard' %}" class="btn btn-primary" >Back to Dashboard</a>
 
-<h3>Total Contributions: ${{ total_contributions }}</h3>
+
+<h3>Balance: ${{ total_contributions }}</h3>
 
 <div class="container">
-    <div class="col-md-4">
-        <canvas id="contributionsPieChart" width="400" height="400"></canvas>
+    <div class="row justify-content-center align-items-center g-2">
+        <div class="col-md-6 p-4">
+            <div class="card text-white bg-success mb-3" style="max-width: 20rem;">
+                <div class="card-header">Balance</div>
+                <div class="card-body">
+                <h4 class="card-title">${{ total_contributions }}</h4>
+                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 p-4">
+            <canvas id="contributionsPieChart" width="400" height="400"></canvas>
+        </div>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-6 p-5">
         <h4>Member Contributions</h4>
         <table>
             <thead>
@@ -46,6 +58,9 @@
             </tbody>
         </table>
     </div>
+    
+    
+   
 </div>
 
 
