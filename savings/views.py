@@ -112,8 +112,16 @@ def dashboard(request):
         Q(manager=request.user) | Q(members=request.user)
     ).distinct()
 
-    # Fetch all contributions made by the logged-in user
-    contributions = Contribution.objects.filter(member=request.user)
+     # Fetch contributions ordered by date descending
+    contributions = Contribution.objects.filter(member=request.user).order_by('-date')
+    
+   
+    
+      # Add total contributions to each group
+    for group in groups:
+        group.total_contributions = Contribution.objects.filter(group=group).aggregate(
+            total=Coalesce(Sum('amount'), Value(0), output_field=DecimalField())
+        )['total']
 
     # Fetch pending invitations for the logged-in user
     invitations = Invitation.objects.filter(user=request.user, status='Pending')
