@@ -17,6 +17,7 @@ from .models import Invitation
 from datetime import date
 from django.db.models.functions import Coalesce
 from django.contrib.auth.models import User
+from collections import defaultdict
 
 
 
@@ -165,18 +166,21 @@ def group_detail(request, group_id):
     
     # Fetch all members of the group, including the manager
     members = group.members.all() | User.objects.filter(id=group.manager.id)
+    
+    # Aggregate contributions by each member using a dictionary
+    contributions_by_member = defaultdict(lambda: 0)
 
-    # Get contributions and include members with no contributions
-    contributions_by_member = []
+    # Sum the contributions for each member once
     for member in members:
-        total_contributed = Contribution.objects.filter(group=group, member=member).aggregate(
+        contributions = Contribution.objects.filter(group=group, member=member).aggregate(
             total=Coalesce(Sum('amount'), Value(0), output_field=DecimalField())
         )['total']
-        contributions_by_member.append({
-            'member': member.username,
-            'total': total_contributed
-        })
+        contributions_by_member[member.username] = contributions
 
+    # Convert to a list of dictionaries for easier template usage
+    contributions_by_member = [{'member': member, 'total': total} for member, total in contributions_by_member.items()]
+
+    # Get total contributions for the group
     total_contributions = Contribution.objects.filter(group=group).aggregate(Sum('amount'))['amount__sum'] or 0
 
     # Fetch contributions ordered by date descending
@@ -184,7 +188,7 @@ def group_detail(request, group_id):
 
     context = {
         'group': group,
-        'contributions': contributions,  # This is where the contributions are passed
+        'contributions': contributions,
         'contributions_by_member': contributions_by_member,
         'total_contributions': total_contributions,
     }
