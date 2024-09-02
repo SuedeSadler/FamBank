@@ -25,58 +25,59 @@
         <li>You are not part of any groups yet.</li>
         {% endfor %} 
     </div>
-</div>
-<div class="row justify-content-center align-items-center g-2">
-    <div class="col-md-6 p-2">
-        <div class="card border-info mb-3">
-            <div class="card-header">
-                Your Contributions
+    <div class="row justify-content-center align-items-center g-2">
+        <div class="col-md-6 p-2">
+            <div class="card border-info mb-3">
+                <div class="card-header">
+                    Your Contributions
+                </div>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Group Name</th>
+                            <th>Amount</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for contribution in contributions %}
+                        <tr>
+                            <td>{{ contribution.group.name}}</td>
+                            <td>${{ contribution.amount }}</td>
+                            <td>{{ contribution.date }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="3">No contributions yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>  
+        </div>
+        
+        <div class="col-md-6 p-2">
+            <div class="card border-primary mb-3">
+                <div class="card-header">
+                    Your Invitations
+                </div>
+                {% for invitation in invitations %}
+                <div class="card-body">
+                    {{ invitation.invited_by.username }} has invited you to join {{ invitation.group.name }}
+                    <form method="post" action="{% url 'respond_invitation' invitation.id %}">
+                        {% csrf_token %}
+                        <button class="btn btn-primary" name="action" value="accept">Accept</button>
+                        <button class="btn btn-secondary" name="action" value="decline">Decline</button>
+                    </form>
+                </div>
+                {% empty %}
+                    You have no pending invitations.
+                {% endfor %}
             </div>
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>Group Name</th>
-                        <th>Amount</th>
-                        <th>Date</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for contribution in contributions %}
-                    <tr>
-                        <td>{{ contribution.group.name}}</td>
-                        <td>${{ contribution.amount }}</td>
-                        <td>{{ contribution.date }}</td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="3">No contributions yet.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>  
-    </div>
-    
-    <div class="col-md-6 p-2">
-        <div class="card border-primary mb-3">
-            <div class="card-header">
-                Your Invitations
-            </div>
-            {% for invitation in invitations %}
-            <div class="card-body">
-                {{ invitation.invited_by.username }} has invited you to join {{ invitation.group.name }}
-                <form method="post" action="{% url 'respond_invitation' invitation.id %}">
-                    {% csrf_token %}
-                    <button class="btn btn-primary" name="action" value="accept">Accept</button>
-                    <button class="btn btn-secondary" name="action" value="decline">Decline</button>
-                </form>
-            </div>
-            {% empty %}
-                You have no pending invitations.
-            {% endfor %}
         </div>
     </div>
 </div>
+
 
 {% endblock %}
 
