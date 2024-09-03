@@ -1,6 +1,51 @@
 {% extends "base_generic.html" %}
-
+{% load static %}
 {% block content %}
-<h1>Welcome to the Family Bank</h1>
-<p>This is the homepage. You can manage your groups and contributions here.</p>
+<div class="jumbotron bg-light p-5 rounded-lg">
+    <div class="container">
+        <h2 class="display-4">Welcome to The Family Bank</h2>
+        <div
+            class="row justify-content-center align-items-center"
+        >
+            <div class="col-6">
+                <p class="">Manage and track contributions towards shared financial goals with ease.</p>
+            </div>
+            <div class="col-6">
+                <img src="{% static 'savings/images/money-bag.png' %}" alt="Feature 2" class="img-fluid" style="max-width: 180px;">
+            </div>
+            
+        </div>
+        <hr class="">
+        <p>The Family Bank helps families and groups stay organized, transparent, and accountable as they work together to reach financial milestones.</p>
+        <a class="btn btn-primary btn-md" href="{% url 'register' %}" role="button">Get Started</a>
+        <a class="btn btn-secondary btn-md" href="{% url 'login' %}" role="button">Login</a>
+    </div>
+</div>
+<div class="container my-5">
+    <h2 class="text-center mb-4">Key Features</h2>
+    <div class="row">
+        <div class="col-md-4 text-center">
+            <div class="feature-icon mb-3">
+                <img src="{% static 'savings/images/money.gif' %}" alt="Feature 1" class="img-fluid" style="max-width: 80px;">
+            </div>
+            <h4>Group Savings Management</h4>
+            <p>Easily create and manage savings groups with your family or friends. Track contributions and progress toward shared goals.</p>
+        </div>
+        <div class="col-md-4 text-center">
+            <div class="feature-icon mb-3">
+                <img src="{% static 'savings/images/growing-money.gif' %}" alt="Feature 2" class="img-fluid" style="max-width: 80px;">
+            </div>
+            <h4>Transparent Contributions</h4>
+            <p>Keep everyone in the loop with transparent, real-time updates on each member’s contributions. No more guessing who contributed what.</p>
+        </div>
+        <div class="col-md-4 text-center">
+            <div class="feature-icon mb-3">
+                <img src="{% static 'savings/images/annual-reports.gif' %}" alt="Feature 3" class="img-fluid" style="max-width: 80px;">
+            </div>
+            <h4>Secure & Easy Access</h4>
+            <p>Log in from anywhere and manage your groups securely.</p>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
