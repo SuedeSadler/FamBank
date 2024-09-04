@@ -12,6 +12,7 @@ from savings.views import (
     respond_invitation,
     profile,
     add_contribution,
+    search_users,
 )
 
 urlpatterns = [
@@ -28,4 +29,5 @@ urlpatterns = [
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     path('dashboard/', dashboard, name='dashboard'),
     path('group/<int:group_id>/add_contribution/', add_contribution, name='add_contribution'),
+    path('search_users/', search_users, name='search_users'),
 ]

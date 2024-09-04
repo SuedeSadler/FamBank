@@ -2,10 +2,47 @@
 {% load crispy_forms_tags %}
 {% block content %}
 <h2>Invite a User to {{ group.name }}</h2>
-<form method="post">
+<form method="POST">
     {% csrf_token %}
-    {{ form|crispy }}
-    <button type="submit">Send Invitation</button>
+    <!-- Hidden input for user ID (populated when a user is selected) -->
+    <input type="hidden" id="id_user" name="user">
+
+    <!-- Search input field -->
+    <input type="text" id="user-search-input" placeholder="Search for users..." onkeyup="searchUsers(this.value)" autocomplete="off">
+    
+    <!-- Search results dropdown -->
+    <ul id="search-results"></ul>
+
+    <button type="submit" class="btn btn-primary">Send Invitation</button>
 </form>
 <a href="{% url 'group_detail' group.id %}">Back to Group Details</a>
+
+<script>
+    function searchUsers(query) {
+        if (query.length > 2) {  // Start search after 2 characters
+            fetch(`{% url 'search_users' %}?q=${query}`)
+            .then(response => response.json())
+            .then(data => {
+                const resultsList = document.getElementById('search-results');
+                resultsList.innerHTML = ''; // Clear previous results
+                
+                // Create list of users
+                data.results.forEach(user => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `<a href="#" onclick="selectUser(${user.id}, '${user.username}')">${user.username}</a>`;
+                    resultsList.appendChild(li);
+                });
+            });
+        }
+    }
+
+    function selectUser(userId, username) {
+        // Update the hidden input field with selected user's ID
+        document.getElementById("id_user").value = userId;
+        // Set the search input to the selected username
+        document.getElementById("user-search-input").value = username;
+        // Clear the search results
+        document.getElementById("search-results").innerHTML = "";
+    }
+</script>
 {% endblock %}

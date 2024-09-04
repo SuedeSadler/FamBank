@@ -9,17 +9,20 @@ from .models import Contribution, User, Group
 
 
 class InvitationForm(forms.ModelForm):
+    user = forms.ModelChoiceField(queryset=User.objects.none(), widget=forms.HiddenInput(), label="")
+
     def __init__(self, *args, **kwargs):
         super(InvitationForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.layout = Layout(
-            Field('user', css_class='form-control')
+            Field('user', id="user-id-field")  # Hidden field for the user
         )
         self.helper.add_input(Submit('submit', 'Send Invitation', css_class='btn btn-primary'))
 
     class Meta:
         model = Invitation
         fields = ['user']
+
 
 class AddMemberForm(forms.Form):
     user = forms.ModelChoiceField(queryset=User.objects.all(), label="Select User to Add")
