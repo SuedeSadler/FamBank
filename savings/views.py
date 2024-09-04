@@ -18,8 +18,16 @@ from datetime import date
 from django.db.models.functions import Coalesce
 from django.contrib.auth.models import User
 from collections import defaultdict
+from django.http import JsonResponse
 
-
+@login_required
+def search_users(request):
+    query = request.GET.get('q', '')
+    if query:
+        users = User.objects.filter(username__icontains=query).exclude(id=request.user.id)[:10]  # Limit to 10 results
+        results = [{'id': user.id, 'username': user.username} for user in users]
+        return JsonResponse({'results': results})
+    return JsonResponse({'results': []})
 
 @login_required
 def add_contribution(request, group_id):
@@ -63,6 +71,7 @@ def respond_invitation(request, invitation_id):
     return redirect('dashboard')
 
 
+
 @login_required
 def send_invitation(request, group_id):
     group = get_object_or_404(Group, id=group_id)
@@ -71,17 +80,22 @@ def send_invitation(request, group_id):
         return redirect('group_detail', group_id=group_id)  # Only the manager can send invitations
 
     if request.method == 'POST':
-        form = InvitationForm(request.POST)
-        if form.is_valid():
-            invitation = form.save(commit=False)
-            invitation.group = group
-            invitation.invited_by = request.user
-            invitation.save()
-            return redirect('group_detail', group_id=group_id)
-    else:
-        form = InvitationForm()
+        user_id = request.POST.get('user')  # Get the selected user ID from the hidden field
+        if user_id:
+            invited_user = get_object_or_404(User, id=user_id)
+            # Prevent sending duplicate invitations
+            existing_invitation = Invitation.objects.filter(group=group, user=invited_user).exists()
 
-    return render(request, 'savings/send_invitation.html', {'form': form, 'group': group})
+            if not existing_invitation:
+                # Create and save the invitation
+                invitation = Invitation(group=group, user=invited_user, invited_by=request.user)
+                invitation.save()
+                return redirect('group_detail', group_id=group_id)
+            else:
+                return render(request, 'savings/send_invitation.html', {'group': group, 'error': 'User has already been invited.'})
+
+    return render(request, 'savings/send_invitation.html', {'group': group})
+
 
 @login_required
 def add_member(request, group_id):
