@@ -3,6 +3,7 @@
 ## Overview
 The **Family Bank** is a web-based financial management platform that allows users to create and manage savings groups with friends or family. This platform provides a transparent and collaborative way for group members to contribute towards shared financial goals. Group managers can invite members, track contributions, and monitor the group's financial progress all from one place.
 
+## Link to website: https://ropuapp-ekbhcfaseqf2gjh3.australiacentral-01.azurewebsites.net/
 ## Key Features
 - **Group Management**: Create savings groups, manage members, and oversee group activities.
 - **Contributions Tracking**: Group leaders can add and track contributions for each member.
