@@ -8,14 +8,14 @@
 
 
 <div class="container-fluid">
-    <div class="row justify-content-center align-items-center g-2">
-        <div class="col-md-6 p-2">
+    <div class="row justify-content-center align-items-start g-2">
+        <div class="col-md-4 p-2">
             <div class="card border-primary mb-3" style="max-width: 25rem;">
                 <div class="card-header">Balance</div>
                 <div class="card-body">
-                <h4 class="card-title">{{ group.name }}</h4>
-                <p class="card-text">{{ group.description }}</p>
-                <h3 class="card-title">${{ total_contributions }}</h3>
+                    <h4 class="card-title">{{ group.name }}</h4>
+                    <p class="card-text">{{ group.description }}</p>
+                    <h3 class="card-title">${{ total_contributions }}</h3>
                 </div>
                 <ul class="list-group list-group-flush">
                     <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -25,13 +25,11 @@
                     </li>
                     <li class="list-group-item d-flex justify-content-between align-items-center">
                         {% if user == group.manager %}
-                        <a class href="{% url 'add_contribution' group.id %}">Add Contribution</a>
-                        {% endif %} 
+                        <a href="{% url 'add_contribution' group.id %}">Add Contribution</a>
+                        {% endif %}
                     </li>
                 </ul>
             </div>
-        </div>
-        <div class="col-md-6 p-2">
             <div class="card border-warning mb-3" style="max-width: 25rem;">
                 <div class="card-header">Contributions by Members</div>
                 <div class="p-2">
@@ -39,9 +37,8 @@
                 </div>
             </div>
         </div>
-    </div>
-    <div class="row justify-content-center align-items-center g-2">
-        <div class="col-md-6 p-2">
+        
+        <div class="col-md-4 p-2">
             <div class="card border-info mb-3">
                 <div class="card-header">
                     Members Transactions
