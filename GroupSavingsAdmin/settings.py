@@ -98,17 +98,22 @@ WSGI_APPLICATION = 'GroupSavingsAdmin.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'mssql',
-        'NAME': 'FamBank',
-        'USER': 'SuedeAdmin',
-        'PASSWORD': 'NhYbB@JvMccX95A',
-        'HOST': 'familybankserver.database.windows.net',
-        'PORT': '1433',
+        'NAME': os.getenv('DB_NAME'),  # Retrieve the DB name from the environment variable
+        'USER': os.getenv('DB_USER'),  # Retrieve the DB user from the environment variable
+        'PASSWORD': os.getenv('DB_PASSWORD'),  # Retrieve the DB password from the environment variable
+        'HOST': os.getenv('DB_HOST'),  # Retrieve the DB host from the environment variable
+        'PORT': os.getenv('DB_PORT'),  # Retrieve the DB port from the environment variable
         'OPTIONS': {
             'driver': 'ODBC Driver 17 for SQL Server',
             'extra_params': 'TrustServerCertificate=yes;Encrypt=yes;',
         },
     }
 }
+print(os.getenv('DB_NAME'))
+print(os.getenv('DB_USER'))
+print(os.getenv('DB_PASSWORD'))
+print(os.getenv('DB_HOST'))
+print(os.getenv('DB_PORT'))
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
