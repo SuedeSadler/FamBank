@@ -18,8 +18,40 @@ from datetime import date
 from django.db.models.functions import Coalesce
 from django.contrib.auth.models import User
 from collections import defaultdict
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
+import requests
 
+def oauth_callback(request):
+    # Get the authorization code from the request
+    code = request.GET.get('code')
+
+    # Exchange the authorization code for an access token
+    token_url = 'https://api.example.com/oauth/token'
+    client_id = 'your_client_id'
+    client_secret = 'your_client_secret'
+    redirect_uri = 'https://your-domain.com/oauth/callback/'  # Your registered callback URL
+
+    payload = {
+        'grant_type': 'authorization_code',
+        'code': code,
+        'redirect_uri': redirect_uri,
+        'client_id': client_id,
+        'client_secret': client_secret
+    }
+
+    response = requests.post(token_url, data=payload)
+
+    if response.status_code == 200:
+        # Successful token retrieval
+        token_data = response.json()
+        access_token = token_data.get('access_token')
+
+        # You can now use the access token for further API calls
+        return JsonResponse(token_data)
+    else:
+        return HttpResponse('Failed to retrieve access token', status=400)
+    
+    
 @login_required
 def search_users(request):
     query = request.GET.get('q', '')
