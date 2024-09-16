@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.urls import path
 from django.contrib.auth import views as auth_views
+from . import views
 from savings.views import (
     homepage,
     dashboard,
@@ -30,4 +31,5 @@ urlpatterns = [
     path('dashboard/', dashboard, name='dashboard'),
     path('group/<int:group_id>/add_contribution/', add_contribution, name='add_contribution'),
     path('search_users/', search_users, name='search_users'),
+    path('oauth/callback/', views.oauth_callback, name='oauth_callback'),
 ]
