@@ -29,7 +29,7 @@ def oauth_callback(request):
     token_url = 'https://api.example.com/oauth/token'
     client_id = 'your_client_id'
     client_secret = 'your_client_secret'
-    redirect_uri = 'https://your-domain.com/oauth/callback/'  # Your registered callback URL
+    redirect_uri = 'https://ropuapp-ekbhcfaseqf2gjh3.australiacentral-01.azurewebsites.net/oauth/callback/'  # Your registered callback URL
 
     payload = {
         'grant_type': 'authorization_code',
