@@ -27,7 +27,11 @@ jobs:
         run: |
           source venv/bin/activate
           pip install -r requirements.txt
-        
+          
+        # Add environment variables here
+        env:
+          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }} 
+          
       - name: Collect Static Files
         run: |
           source venv/bin/activate
