@@ -16,27 +16,31 @@ import environ
 
 # Initialise environment variables
 env = environ.Env()
-# Read the .env file in the root directory of your project
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
+# Determine the base directory
+BASE_DIR = Path(__file__).resolve().parent.parent
 
-PRIVATE_KEY = env('PRIVATE_KEY') 
-CLIENT_ID = env('CLIENT_ID')
-CLIENT_SECRET = env('CLIENT_SECRET')
+# If an .env file exists (usually in local dev), load it
+if os.path.exists(os.path.join(BASE_DIR, '.env')):
+    environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
+# Environment variables for OAuth settings and other secrets
+PRIVATE_KEY = env('PRIVATE_KEY', default=None)  # GitHub Secrets or .env
+CLIENT_ID = env('CLIENT_ID', default=None)  # GitHub Secrets or .env
+CLIENT_SECRET = env('CLIENT_SECRET', default=None)  # GitHub Secrets or .env
+
+# Ensure PRIVATE_KEY is set (in case you rely on it critically)
+if PRIVATE_KEY is None:
+    raise Exception("PRIVATE_KEY environment variable not set.")
+    
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
+SECRET_KEY = env('SECRET_KEY', default='django-insecure-ym3*n+5#xvqm8ykixwgma8j)rq68e$ta2d_36boug7a2*c_mw7')
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-ym3*n+5#xvqm8ykixwgma8j)rq68e$ta2d_36boug7a2*c_mw7'
+DEBUG = env.bool('DEBUG', default=True)
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost','ropuapp-ekbhcfaseqf2gjh3.australiacentral-01.azurewebsites.net']
 
