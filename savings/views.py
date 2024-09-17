@@ -54,7 +54,7 @@ def generate_jwt():
         "nbf": datetime.datetime.now(datetime.timezone.utc),
         "scope": "openid accounts",
         "response_type": "code id_token",
-        "redirect_uri": "http://localhost:8000/oauth/callback/",  # Ensure this is your correct callback URI
+        "redirect_uri": "https://ropuapp-ekbhcfaseqf2gjh3.australiacentral-01.azurewebsites.net/oauth/callback/",  # Ensure this is your correct callback URI
         "client_id": client_id,
         "nonce": "your_random_nonce",
         "state": "your_state"
@@ -71,7 +71,7 @@ def start_oauth(request):
     # Get your JWT
     jwt_token = generate_jwt()
     client_id = settings.CLIENT_ID
-    redirect_url = 'http://localhost:8000/oauth/callback/'  # Your registered callback URL
+    redirect_url = 'https://ropuapp-ekbhcfaseqf2gjh3.australiacentral-01.azurewebsites.net/oauth/callback/'  # Your registered callback URL
     
     params = {
         "scope": "openid accounts",  # or "openid payments"
@@ -90,11 +90,23 @@ def start_oauth(request):
     return redirect(auth_url)
 
 def oauth_callback(request):
+    # Check for error parameters in the callback URL
+    error = request.GET.get('error')
+    error_description = request.GET.get('error_description')
+
+    if error:
+        # Handle the error case
+        return HttpResponse(f"Error: {error_description}")
+
+    # Proceed with the normal flow if no error is present
     code = request.GET.get('code')
+    if not code:
+        return HttpResponse("Authorization code not found.", status=400)
+
     token_url = 'https://api-nomatls.apicentre.middleware.co.nz/middleware-nz-sandbox/v1.0/token'
     client_id = settings.CLIENT_ID
     client_secret = settings.CLIENT_SECRET
-    redirect_url = 'http://localhost:8000/oauth/callback/'  # Your registered callback URL
+    redirect_url = 'https://ropuapp-ekbhcfaseqf2gjh3.australiacentral-01.azurewebsites.net/oauth/callback/'  # Your registered callback URL
     data = {
         'grant_type': 'authorization_code',
         'code': code,
@@ -102,15 +114,18 @@ def oauth_callback(request):
         'client_id': client_id,
         'client_secret': client_secret
     }
-    
+
     response = requests.post(token_url, data=data)
-    
+
     if response.status_code == 200:
         tokens = response.json()
         # Handle tokens (access_token, id_token, refresh_token)
+        return HttpResponse(f"Access Token: {tokens.get('access_token')}")
     else:
-        # Handle error
-        pass
+        # Handle error from the token exchange step
+        return HttpResponse(f"Token exchange failed: {response.text}", status=response.status_code)
+
+
 
 
 @login_required
