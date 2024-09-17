@@ -1,3 +1,4 @@
+from cryptography.hazmat.primitives.serialization import load_pem_private_key
 from django.shortcuts import redirect, render
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
@@ -27,7 +28,18 @@ import jwt
 import datetime
 
 def generate_jwt():
-    private_key = settings.PRIVATE_KEY
+    private_key = settings.PRIVATE_KEY.replace('\\n', '\n')
+     # Ensure that key is properly loaded and valid
+    try:
+        # Convert key string to bytes
+        key_data = private_key.encode()
+        
+        # Test loading the private key
+        load_pem_private_key(key_data, password=None)
+        print("Private key loaded successfully.")
+    except Exception as e:
+        print(f"Failed to load private key: {e}")
+        raise e  # Re-raise the exception to stop execution if key loading fails
     client_id = settings.CLIENT_ID
     
     payload = {
@@ -44,7 +56,9 @@ def generate_jwt():
     }
     
     # Sign the JWT
+    
     token = jwt.encode(payload, private_key, algorithm='RS256')
+    
     return token
 
 def start_oauth(request):
