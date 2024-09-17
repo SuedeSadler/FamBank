@@ -21,7 +21,7 @@ The **Family Bank** is a web-based financial management platform that allows use
 - **Deployment**: Hosted on Azure App Service
 
 ## Installation
-
+dssd
 1. **Clone the repository**:
    ```bash
    git clone https://github.com/your-repo/family-bank.git
