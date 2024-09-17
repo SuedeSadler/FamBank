@@ -30,7 +30,7 @@ import datetime
 
 def generate_jwt():
     # Fetch PRIVATE_KEY from environment variables
-    private_key = settings.PRIVATE_KEY.replace('\\n', '\n')
+    private_key = settings.PRIVATE_KEY.encode('utf-8')
 
     # Ensure that key is properly loaded and valid
     try:
