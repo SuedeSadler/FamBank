@@ -25,7 +25,7 @@ if os.path.exists(os.path.join(BASE_DIR, '.env')):
     environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 # Environment variables for OAuth settings and other secrets
-PRIVATE_KEY = env('PRIVATE_KEY', default=None)
+PRIVATE_KEY = env('PRIVATE_KEY', default=None).replace('\\n', '\n')
 CLIENT_ID = env('CLIENT_ID', default=None)
 CLIENT_SECRET = env('CLIENT_SECRET', default=None)
 
