@@ -1,4 +1,5 @@
 from cryptography.hazmat.primitives.serialization import load_pem_private_key
+from cryptography.hazmat.backends import default_backend
 from django.shortcuts import redirect, render
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
@@ -28,20 +29,24 @@ import jwt
 import datetime
 
 def generate_jwt():
+    # Fetch PRIVATE_KEY from environment variables
     private_key = settings.PRIVATE_KEY.replace('\\n', '\n')
-     # Ensure that key is properly loaded and valid
+
+    # Ensure that key is properly loaded and valid
     try:
         # Convert key string to bytes
         key_data = private_key.encode()
-        
-        # Test loading the private key
-        load_pem_private_key(key_data, password=None)
+
+        # Load the private key
+        private_key_obj = load_pem_private_key(key_data, password=None, backend=default_backend())
         print("Private key loaded successfully.")
-    except Exception as e:
+    except ValueError as e:
         print(f"Failed to load private key: {e}")
         raise e  # Re-raise the exception to stop execution if key loading fails
+
     client_id = settings.CLIENT_ID
-    
+
+    # Define the payload for the JWT
     payload = {
         "iss": client_id,
         "aud": "https://api-nomatls.apicentre.middleware.co.nz",
@@ -49,16 +54,15 @@ def generate_jwt():
         "nbf": datetime.datetime.now(datetime.timezone.utc),
         "scope": "openid accounts",
         "response_type": "code id_token",
-        "redirect_uri": "https://ropuapp-ekbhcfaseqf2gjh3.australiacentral-01.azurewebsites.net/oauth/callback/",  # Ensure this is your correct callback URI
+        "redirect_uri": "http://localhost:8000/oauth/callback/",  # Ensure this is your correct callback URI
         "client_id": client_id,
         "nonce": "your_random_nonce",
         "state": "your_state"
     }
-    
-    # Sign the JWT
-    
-    token = jwt.encode(payload, private_key, algorithm='RS256')
-    
+
+    # Sign the JWT using the loaded private key
+    token = jwt.encode(payload, private_key_obj, algorithm='RS256')
+
     return token
 
 def start_oauth(request):
@@ -67,7 +71,7 @@ def start_oauth(request):
     # Get your JWT
     jwt_token = generate_jwt()
     client_id = settings.CLIENT_ID
-    redirect_url = 'https://ropuapp-ekbhcfaseqf2gjh3.australiacentral-01.azurewebsites.net/oauth/callback/'  # Your registered callback URL
+    redirect_url = 'http://localhost:8000/oauth/callback/'  # Your registered callback URL
     
     params = {
         "scope": "openid accounts",  # or "openid payments"
@@ -90,7 +94,7 @@ def oauth_callback(request):
     token_url = 'https://api-nomatls.apicentre.middleware.co.nz/middleware-nz-sandbox/v1.0/token'
     client_id = settings.CLIENT_ID
     client_secret = settings.CLIENT_SECRET
-    redirect_url = 'https://ropuapp-ekbhcfaseqf2gjh3.australiacentral-01.azurewebsites.net/oauth/callback/'  # Your registered callback URL
+    redirect_url = 'http://localhost:8000/oauth/callback/'  # Your registered callback URL
     data = {
         'grant_type': 'authorization_code',
         'code': code,
