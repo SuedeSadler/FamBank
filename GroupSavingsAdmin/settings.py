@@ -25,12 +25,12 @@ if os.path.exists(os.path.join(BASE_DIR, '.env')):
     environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 # Environment variables for OAuth settings and other secrets
-PRIVATE_KEY = env('PRIVATE_KEY', default=None)  # GitHub Secrets or .env
-CLIENT_ID = env('CLIENT_ID', default=None)  # GitHub Secrets or .env
-CLIENT_SECRET = env('CLIENT_SECRET', default=None)  # GitHub Secrets or .env
+PRIVATE_KEY = env('PRIVATE_KEY', default=None)
+CLIENT_ID = env('CLIENT_ID', default=None)
+CLIENT_SECRET = env('CLIENT_SECRET', default=None)
 
-# Ensure PRIVATE_KEY is set (in case you rely on it critically)
-if PRIVATE_KEY is None:
+# If any critical variable is not set, raise an error
+if not PRIVATE_KEY:
     raise Exception("PRIVATE_KEY environment variable not set.")
     
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
