@@ -30,19 +30,15 @@ import datetime
 
 def generate_jwt():
     # Fetch PRIVATE_KEY from environment variables
-    private_key = settings.PRIVATE_KEY.encode('utf-8')
+    private_key = settings.PRIVATE_KEY
 
-    # Ensure that key is properly loaded and valid
-    try:
-        # Convert key string to bytes
-        key_data = private_key.encode()
 
-        # Load the private key
-        private_key_obj = load_pem_private_key(key_data, password=None, backend=default_backend())
-        print("Private key loaded successfully.")
-    except ValueError as e:
-        print(f"Failed to load private key: {e}")
-        raise e  # Re-raise the exception to stop execution if key loading fails
+       # If the private key is a string, encode it to bytes
+    if isinstance(private_key, str):
+        private_key = private_key.encode('utf-8')
+
+    # Load the private key object
+    private_key_obj = load_pem_private_key(private_key, password=None, backend=default_backend())
 
     client_id = settings.CLIENT_ID
 
