@@ -20,38 +20,81 @@ from django.contrib.auth.models import User
 from collections import defaultdict
 from django.http import JsonResponse, HttpResponse
 import requests
+from django.conf import settings  # Import the settings
+from django.shortcuts import redirect
+from urllib.parse import urlencode
+import jwt
+import datetime
+
+def generate_jwt():
+    private_key = settings.PRIVATE_KEY
+    client_id = settings.CLIENT_ID
+    
+    payload = {
+        "iss": client_id,
+        "aud": "https://api-nomatls.apicentre.middleware.co.nz",
+        "exp": datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(minutes=5),
+        "nbf": datetime.datetime.now(datetime.timezone.utc),
+        "scope": "openid accounts",
+        "response_type": "code id_token",
+        "redirect_uri": "https://ropuapp-ekbhcfaseqf2gjh3.australiacentral-01.azurewebsites.net/oauth/callback/",  # Ensure this is your correct callback URI
+        "client_id": client_id,
+        "nonce": "your_random_nonce",
+        "state": "your_state"
+    }
+    
+    # Sign the JWT
+    token = jwt.encode(payload, private_key, algorithm='RS256')
+    return token
+
+def start_oauth(request):
+    base_url = "https://api-nomatls.apicentre.middleware.co.nz/middleware-nz-sandbox/v1.0/oauth/authorize"
+    
+    # Get your JWT
+    jwt_token = generate_jwt()
+    client_id = settings.CLIENT_ID
+    redirect_url = 'https://ropuapp-ekbhcfaseqf2gjh3.australiacentral-01.azurewebsites.net/oauth/callback/'  # Your registered callback URL
+    
+    params = {
+        "scope": "openid accounts",  # or "openid payments"
+        "response_type": "code id_token",
+        "client_id": client_id,
+        "redirect_uri": redirect_url,
+        "request": jwt_token,
+        "nonce": "your_random_nonce",
+        "state": "your_state",
+        "Intent Identifier": "your_account_request_id_or_payment_id"
+    }
+    
+    # Construct the full authorization URL
+    auth_url = f"{base_url}?{urlencode(params)}"
+    
+    return redirect(auth_url)
 
 def oauth_callback(request):
-    # Get the authorization code from the request
     code = request.GET.get('code')
-
-    # Exchange the authorization code for an access token
-    token_url = 'https://api.example.com/oauth/token'
-    client_id = 'your_client_id'
-    client_secret = 'your_client_secret'
-    redirect_uri = 'https://ropuapp-ekbhcfaseqf2gjh3.australiacentral-01.azurewebsites.net/oauth/callback/'  # Your registered callback URL
-
-    payload = {
+    token_url = 'https://api-nomatls.apicentre.middleware.co.nz/middleware-nz-sandbox/v1.0/token'
+    client_id = settings.CLIENT_ID
+    client_secret = settings.CLIENT_SECRET
+    redirect_url = 'https://ropuapp-ekbhcfaseqf2gjh3.australiacentral-01.azurewebsites.net/oauth/callback/'  # Your registered callback URL
+    data = {
         'grant_type': 'authorization_code',
         'code': code,
-        'redirect_uri': redirect_uri,
+        'redirect_uri': redirect_url,
         'client_id': client_id,
         'client_secret': client_secret
     }
-
-    response = requests.post(token_url, data=payload)
-
+    
+    response = requests.post(token_url, data=data)
+    
     if response.status_code == 200:
-        # Successful token retrieval
-        token_data = response.json()
-        access_token = token_data.get('access_token')
-
-        # You can now use the access token for further API calls
-        return JsonResponse(token_data)
+        tokens = response.json()
+        # Handle tokens (access_token, id_token, refresh_token)
     else:
-        return HttpResponse('Failed to retrieve access token', status=400)
-    
-    
+        # Handle error
+        pass
+
+
 @login_required
 def search_users(request):
     query = request.GET.get('q', '')

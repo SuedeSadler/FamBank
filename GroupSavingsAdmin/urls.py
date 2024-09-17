@@ -14,6 +14,7 @@ from savings.views import (
     add_contribution,
     search_users,
     oauth_callback,
+    start_oauth
 )
 
 urlpatterns = [
@@ -32,4 +33,5 @@ urlpatterns = [
     path('group/<int:group_id>/add_contribution/', add_contribution, name='add_contribution'),
     path('search_users/', search_users, name='search_users'),
     path('oauth/callback/', oauth_callback, name='oauth_callback'),
+    path('start-oauth/', start_oauth, name='start_oauth'),
 ]
