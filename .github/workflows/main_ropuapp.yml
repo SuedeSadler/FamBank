@@ -10,6 +10,12 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+     # Set environment variables at the job level so they are available to all steps
+    env: 
+      PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+      CLIENT_ID: ${{ secrets.CLIENT_ID }}
+      CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+
     steps:
       - uses: actions/checkout@v4
 
@@ -27,10 +33,6 @@ jobs:
         run: |
           source venv/bin/activate
           pip install -r requirements.txt
-          
-        # Add environment variables here
-        env:
-          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }} 
           
       - name: Collect Static Files
         run: |
