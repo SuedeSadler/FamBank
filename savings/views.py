@@ -1,5 +1,4 @@
 from cryptography.hazmat.primitives.serialization import load_pem_private_key
-from cryptography.hazmat.backends import default_backend
 from django.shortcuts import redirect, render
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
@@ -27,36 +26,36 @@ from django.shortcuts import redirect
 from urllib.parse import urlencode
 import jwt
 import datetime
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.backends import default_backend
 
 def generate_jwt():
-    # Fetch PRIVATE_KEY from environment variables
     private_key = settings.PRIVATE_KEY
 
-
-       # If the private key is a string, encode it to bytes
+    # Load private key if it's in string format
     if isinstance(private_key, str):
         private_key = private_key.encode('utf-8')
 
-    # Load the private key object
-    private_key_obj = load_pem_private_key(private_key, password=None, backend=default_backend())
+    # Load private key using the serialization module
+    private_key_obj = serialization.load_pem_private_key(private_key, password=None, backend=default_backend())
 
     client_id = settings.CLIENT_ID
 
-    # Define the payload for the JWT
     payload = {
-        "iss": client_id,
-        "aud": "https://api-nomatls.apicentre.middleware.co.nz",
+        "iss": client_id,  # The client_id
+        "aud": "https://api-nomatls.apicentre.middleware.co.nz",  # The API provider audience URL
         "exp": datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(minutes=5),
         "nbf": datetime.datetime.now(datetime.timezone.utc),
-        "scope": "openid accounts",
+        "scope": "openid accounts",  # Make sure this matches the query param scope
         "response_type": "code id_token",
-        "redirect_uri": "https://ropuapp-ekbhcfaseqf2gjh3.australiacentral-01.azurewebsites.net/oauth/callback/",  # Ensure this is your correct callback URI
+        "redirect_uri": "https://ropuapp-ekbhcfaseqf2gjh3.australiacentral-01.azurewebsites.net/oauth/callback/",  # Must match exactly with the one registered
         "client_id": client_id,
-        "nonce": "your_random_nonce",
-        "state": "your_state"
+        "nonce": "unique_nonce_value",  # Replace with a unique nonce generator
+        "state": "unique_state_value",  # Optional, replace with a unique state generator if used
+        # Add other required fields if any, such as the Intent Identifier
     }
 
-    # Sign the JWT using the loaded private key
+    # Sign the JWT with the private key
     token = jwt.encode(payload, private_key_obj, algorithm='RS256')
 
     return token
@@ -66,6 +65,7 @@ def start_oauth(request):
     
     # Get your JWT
     jwt_token = generate_jwt()
+    print(jwt_token)  # Add this line after generating the token
     client_id = settings.CLIENT_ID
     redirect_url = 'https://ropuapp-ekbhcfaseqf2gjh3.australiacentral-01.azurewebsites.net/oauth/callback/'  # Your registered callback URL
     
