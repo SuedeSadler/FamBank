@@ -82,7 +82,7 @@ def start_oauth(request):
     
     params = {
         "scope": "openid accounts",  # or "openid payments" if you're doing payments
-        "response_type": "code",
+        "response_type": "code id_token",
         "client_id": client_id,
         "redirect_uri": redirect_url,
         "request": jwt_token,  # The JWT you just generated
@@ -96,29 +96,30 @@ def start_oauth(request):
     
     return redirect(auth_url)
 
-
 def oauth_callback(request):
-    # Check for error parameters in the callback URL
     error = request.GET.get('error')
     error_description = request.GET.get('error_description')
 
     if error:
-        print(f"Error received: {error}, Description: {error_description}")
         return HttpResponse(f"Error: {error_description}")
 
-    # Proceed with the normal flow if no error is present
     code = request.GET.get('code')
+    id_token = request.GET.get('id_token')
+
     if not code:
         return HttpResponse("Authorization code not found.", status=400)
 
-    # Log authorization code
-    print(f"Authorization code: {code}")
+    # Optionally handle the id_token if needed
+    if id_token:
+        # You can validate the id_token here if required
+        pass
 
+    # Continue with token exchange using the code
     token_url = 'https://api-nomatls.apicentre.middleware.co.nz/middleware-nz-sandbox/v1.0/token'
     client_id = settings.CLIENT_ID
     client_secret = settings.CLIENT_SECRET
     redirect_url = 'https://ropuapp-ekbhcfaseqf2gjh3.australiacentral-01.azurewebsites.net/oauth/callback/'
-
+    
     data = {
         'grant_type': 'authorization_code',
         'code': code,
@@ -128,14 +129,12 @@ def oauth_callback(request):
     }
 
     response = requests.post(token_url, data=data)
-    print(f"Token exchange response: {response.text}")  # Log the response for debugging
 
     if response.status_code == 200:
         tokens = response.json()
         return HttpResponse(f"Access Token: {tokens.get('access_token')}")
     else:
         return HttpResponse(f"Token exchange failed: {response.text}", status=response.status_code)
-
 # def oauth_callback(request):
 #     # Check for error parameters in the callback URL
 #     error = request.GET.get('error')
