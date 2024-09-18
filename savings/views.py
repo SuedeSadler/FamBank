@@ -82,7 +82,7 @@ def start_oauth(request):
     
     params = {
         "scope": "openid accounts",  # or "openid payments" if you're doing payments
-        "response_type": "code id_token",
+        "response_type": "code",
         "client_id": client_id,
         "redirect_uri": redirect_url,
         "request": jwt_token,  # The JWT you just generated
@@ -98,7 +98,14 @@ def start_oauth(request):
 
 
 def oauth_callback(request):
-    
+    # Check for error parameters in the callback URL
+    error = request.GET.get('error')
+    error_description = request.GET.get('error_description')
+
+    if error:
+        print(f"Error received: {error}, Description: {error_description}")
+        return HttpResponse(f"Error: {error_description}")
+
     # Proceed with the normal flow if no error is present
     code = request.GET.get('code')
     if not code:
