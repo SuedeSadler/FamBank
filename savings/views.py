@@ -53,7 +53,7 @@ def generate_jwt():
         "nbf": datetime.datetime.now(datetime.timezone.utc),  # Not before time
         "scope": "openid accounts",  # Scope for account information
         "response_type": "code id_token",  # Response type as per the documentation
-        "redirect_uri": "https://your-app-url/oauth/callback/",  # Replace with your actual callback URL
+        "redirect_uri": "https://ropuapp-ekbhcfaseqf2gjh3.australiacentral-01.azurewebsites.net/oauth/callback/",  # Replace with your actual callback URL
         "client_id": client_id,  # Client ID from settings
         "nonce": nonce,  # Unique nonce to prevent replay attacks
         "state": state  # Optional state to track the request
@@ -71,19 +71,20 @@ def generate_jwt():
 def start_oauth(request):
     base_url = "https://api-nomatls.apicentre.middleware.co.nz/middleware-nz-sandbox/v1.0/oauth/authorize"
     
-    # Get your JWT
+    # Generate JWT
     jwt_token = generate_jwt()
+
     client_id = settings.CLIENT_ID
     redirect_url = 'https://ropuapp-ekbhcfaseqf2gjh3.australiacentral-01.azurewebsites.net/oauth/callback/'  # Your registered callback URL
     
     params = {
-        "scope": "openid accounts",  # or "openid payments"
+        "scope": "openid accounts",  # or "openid payments" if you're doing payments
         "response_type": "code id_token",
         "client_id": client_id,
         "redirect_uri": redirect_url,
-        "request": jwt_token,
-        "nonce": "your_random_nonce",
-        "state": "your_state",
+        "request": jwt_token,  # The JWT you just generated
+        "nonce": "unique_nonce_value",  # Replace with a unique nonce
+        "state": "unique_state_value",  # Replace with a unique state
         "Intent Identifier": "your_account_request_id_or_payment_id"
     }
     
