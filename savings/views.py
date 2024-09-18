@@ -98,14 +98,7 @@ def start_oauth(request):
 
 
 def oauth_callback(request):
-    # Check for error parameters in the callback URL
-    error = request.GET.get('error')
-    error_description = request.GET.get('error_description')
-
-    if error:
-        print(f"Error received: {error}, Description: {error_description}")
-        return HttpResponse(f"Error: {error_description}")
-
+    
     # Proceed with the normal flow if no error is present
     code = request.GET.get('code')
     if not code:
