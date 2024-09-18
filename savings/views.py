@@ -66,13 +66,13 @@ def generate_jwt():
 
     token = jwt.encode(payload, private_key_obj, algorithm='RS256', headers=headers)
 
-    return token
+    return token, nonce, state
 
 def start_oauth(request):
     base_url = "https://api-nomatls.apicentre.middleware.co.nz/middleware-nz-sandbox/v1.0/oauth/authorize"
     
     # Generate JWT
-    jwt_token = generate_jwt()
+    jwt_token, nonce, state = generate_jwt()
 
     client_id = settings.CLIENT_ID
     redirect_url = 'https://ropuapp-ekbhcfaseqf2gjh3.australiacentral-01.azurewebsites.net/oauth/callback/'  # Your registered callback URL
@@ -83,8 +83,8 @@ def start_oauth(request):
         "client_id": client_id,
         "redirect_uri": redirect_url,
         "request": jwt_token,  # The JWT you just generated
-        "nonce": "unique_nonce_value",  # Replace with a unique nonce
-        "state": "unique_state_value",  # Replace with a unique state
+        "nonce": nonce,  # Replace with a unique nonce
+        "state": state,  # Replace with a unique state
         "Intent Identifier": "your_account_request_id_or_payment_id"
     }
     
