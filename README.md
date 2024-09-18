@@ -11,6 +11,7 @@ The **Family Bank** is a web-based financial management platform that allows use
 - **Transparency**: Every group member can view contributions and overall group progress, ensuring transparency.
 - **Progress Tracking**: The app includes charts and visual reports for tracking the group’s financial progress.
 - **Profile Management**: Users can manage their profiles, including updating profile pictures.
+- **OAuth**: adding Oauth.
 
 ## Technologies Used
 - **Backend**: Django 5.x
