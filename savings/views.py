@@ -74,7 +74,7 @@ def start_oauth(request):
     # Generate JWT
     jwt_token, nonce, state = generate_jwt()
     # Display the token in the browser for debugging
-    return HttpResponse(f"Generated JWT Token: {jwt_token}")
+    #return HttpResponse(f"Generated JWT Token: {jwt_token}")
 
     client_id = settings.CLIENT_ID
     redirect_url = 'https://ropuapp-ekbhcfaseqf2gjh3.australiacentral-01.azurewebsites.net/oauth/callback/'  # Your registered callback URL
