@@ -109,29 +109,38 @@ def oauth_callback(request):
     if not code:
         return HttpResponse("Authorization code not found.", status=400)
 
-    token_url = 'https://api-nomatls.apicentre.middleware.co.nz/middleware-nz-sandbox/v1.0/token'
+    token_url = 'https://api-nomatls.apicentre.middleware.co.nz/middleware-nz-sandbox/v1.0/oauth/token'
     client_id = settings.CLIENT_ID
     client_secret = settings.CLIENT_SECRET
-    redirect_url = 'https://ropuapp-ekbhcfaseqf2gjh3.australiacentral-01.azurewebsites.net/oauth/callback/'  # Your registered callback URL
+    redirect_url = 'https://ropuapp-ekbhcfaseqf2gjh3.australiacentral-01.azurewebsites.net/oauth/callback/'
+
+    # Create the Basic Auth header by base64 encoding client_id:client_secret
+    auth_string = f"{client_id}:{client_secret}"
+    encoded_auth_string = base64.b64encode(auth_string.encode('utf-8')).decode('utf-8')
+
+    headers = {
+        'Authorization': f'Basic {encoded_auth_string}',
+        'Content-Type': 'application/x-www-form-urlencoded'
+    }
+
     data = {
         'grant_type': 'authorization_code',
         'code': code,
         'redirect_uri': redirect_url,
-        'client_id': client_id,
-        'client_secret': client_secret
+        'scope': 'openid accounts'
     }
 
-    response = requests.post(token_url, data=data)
+    response = requests.post(token_url, headers=headers, data=data)
 
     if response.status_code == 200:
         tokens = response.json()
         # Handle tokens (access_token, id_token, refresh_token)
         return HttpResponse(f"Access Token: {tokens.get('access_token')}")
     else:
+        # Log the response for debugging
+        print(f"Token exchange failed: {response.text}")
         # Handle error from the token exchange step
         return HttpResponse(f"Token exchange failed: {response.text}", status=response.status_code)
-
-
 
 
 @login_required
