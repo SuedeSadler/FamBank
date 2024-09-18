@@ -76,6 +76,9 @@ def start_oauth(request):
     jwt_token, nonce, state = generate_jwt()
     # Display the token in the browser for debugging
     #return HttpResponse(f"Generated JWT Token: {jwt_token}")
+    
+    # Store the state in the session to compare it later in the callback
+    request.session['oauth_state'] = state
 
     client_id = settings.CLIENT_ID
     redirect_url = 'https://ropuapp-ekbhcfaseqf2gjh3.australiacentral-01.azurewebsites.net/oauth/callback/'  # Your registered callback URL
@@ -98,9 +101,16 @@ def start_oauth(request):
 
 def oauth_callback(request):
     
-
+    state = request.GET.get('state')
     # Get the authorization code from the callback
     code = request.GET.get('code')
+    # Validate that the state is the same as the one you sent
+    # This prevents CSRF attacks
+    if not state or state != request.session.get('oauth_state'):
+        return HttpResponse("Invalid state parameter.", status=400)
+    
+    if not code:
+        return HttpResponse("Authorization code not found.", status=400)
    
 
     # Token exchange URL
