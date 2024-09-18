@@ -97,11 +97,6 @@ def start_oauth(request):
     return redirect(auth_url)
 
 def oauth_callback(request):
-    error = request.GET.get('error')
-    error_description = request.GET.get('error_description')
-
-    if error:
-        return HttpResponse(f"Error: {error_description}")
 
     code = request.GET.get('code')
     id_token = request.GET.get('id_token')
