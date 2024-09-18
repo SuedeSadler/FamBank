@@ -28,6 +28,7 @@ from urllib.parse import urlencode
 import jwt
 import datetime
 import secrets
+import base64
 
 def generate_jwt():
     private_key = settings.PRIVATE_KEY
