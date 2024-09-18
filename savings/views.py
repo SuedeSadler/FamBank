@@ -27,13 +27,12 @@ from django.shortcuts import redirect
 from urllib.parse import urlencode
 import jwt
 import datetime
+import secrets
 
 def generate_jwt():
-    # Fetch PRIVATE_KEY from environment variables
     private_key = settings.PRIVATE_KEY
 
-
-       # If the private key is a string, encode it to bytes
+    # Ensure private key is in bytes
     if isinstance(private_key, str):
         private_key = private_key.encode('utf-8')
 
@@ -42,22 +41,30 @@ def generate_jwt():
 
     client_id = settings.CLIENT_ID
 
+    # Generate a random nonce and state
+    nonce = secrets.token_hex(16)
+    state = secrets.token_hex(16)
+
     # Define the payload for the JWT
     payload = {
-        "iss": client_id,
-        "aud": "https://api-nomatls.apicentre.middleware.co.nz",
-        "exp": datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(minutes=5),
-        "nbf": datetime.datetime.now(datetime.timezone.utc),
-        "scope": "openid accounts",
-        "response_type": "code id_token",
-        "redirect_uri": "https://ropuapp-ekbhcfaseqf2gjh3.australiacentral-01.azurewebsites.net/oauth/callback/",  # Ensure this is your correct callback URI
-        "client_id": client_id,
-        "nonce": "your_random_nonce",
-        "state": "your_state"
+        "iss": client_id,  # Client ID provided by the API provider
+        "aud": "https://api-nomatls.apicentre.middleware.co.nz",  # Audience
+        "exp": datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(minutes=5),  # Expiration time
+        "nbf": datetime.datetime.now(datetime.timezone.utc),  # Not before time
+        "scope": "openid accounts",  # Scope for account information
+        "response_type": "code id_token",  # Response type as per the documentation
+        "redirect_uri": "https://your-app-url/oauth/callback/",  # Replace with your actual callback URL
+        "client_id": client_id,  # Client ID from settings
+        "nonce": nonce,  # Unique nonce to prevent replay attacks
+        "state": state  # Optional state to track the request
     }
 
     # Sign the JWT using the loaded private key
-    token = jwt.encode(payload, private_key_obj, algorithm='RS256')
+    headers = {
+        "kid": settings.KEY_ID  # Use the Key ID if required by the API
+    }
+
+    token = jwt.encode(payload, private_key_obj, algorithm='RS256', headers=headers)
 
     return token
 

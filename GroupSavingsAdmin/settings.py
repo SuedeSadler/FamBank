@@ -28,6 +28,7 @@ if os.path.exists(os.path.join(BASE_DIR, '.env')):
 PRIVATE_KEY = env('PRIVATE_KEY', default=None).replace('\\n', '\n')
 CLIENT_ID = env('CLIENT_ID', default=None)
 CLIENT_SECRET = env('CLIENT_SECRET', default=None)
+KEY_ID = env('KEY_ID', default=None)
 
 # If any critical variable is not set, raise an error
 if not PRIVATE_KEY:
