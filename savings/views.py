@@ -97,33 +97,43 @@ def start_oauth(request):
     return redirect(auth_url)
 
 def oauth_callback(request):
+    
 
-    code = request.GET.get('code')
-    id_token = request.GET.get('id_token')
-
-   
-
-    # Continue with token exchange using the code
-    token_url = 'https://api-nomatls.apicentre.middleware.co.nz/middleware-nz-sandbox/v1.0/token'
+    # Token exchange URL
+    token_url = 'https://api-nomatls.apicentre.middleware.co.nz/middleware-nz-sandbox/v1.0/oauth/token'
+    
+    # Get client_id and client_secret from settings
     client_id = settings.CLIENT_ID
     client_secret = settings.CLIENT_SECRET
-    redirect_url = 'https://ropuapp-ekbhcfaseqf2gjh3.australiacentral-01.azurewebsites.net/oauth/callback/'
-    
+
+    # Encode the client ID and client secret for Basic Auth
+    credentials = f"{client_id}:{client_secret}".encode('utf-8')
+    auth_header = base64.b64encode(credentials).decode('utf-8')
+
+    # Set headers for the POST request
+    headers = {
+        'Authorization': f'Basic {auth_header}',
+        'Content-Type': 'application/x-www-form-urlencoded'
+    }
+
+    # Data for the token request
     data = {
         'grant_type': 'authorization_code',
         'code': code,
-        'redirect_uri': redirect_url,
-        'client_id': client_id,
-        'client_secret': client_secret
+        'redirect_uri': 'https://ropuapp-ekbhcfaseqf2gjh3.australiacentral-01.azurewebsites.net/oauth/callback/',  # Your registered callback URL
     }
 
-    response = requests.post(token_url, data=data)
+    # Make the POST request to exchange the authorization code for an access token
+    response = requests.post(token_url, data=data, headers=headers)
 
     if response.status_code == 200:
         tokens = response.json()
+        # Handle tokens (access_token, id_token, refresh_token)
         return HttpResponse(f"Access Token: {tokens.get('access_token')}")
     else:
+        # Handle error from the token exchange step
         return HttpResponse(f"Token exchange failed: {response.text}", status=response.status_code)
+    
 # def oauth_callback(request):
 #     # Check for error parameters in the callback URL
 #     error = request.GET.get('error')
