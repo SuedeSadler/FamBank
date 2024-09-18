@@ -101,13 +101,7 @@ def oauth_callback(request):
     code = request.GET.get('code')
     id_token = request.GET.get('id_token')
 
-    if not code:
-        return HttpResponse("Authorization code not found.", status=400)
-
-    # Optionally handle the id_token if needed
-    if id_token:
-        # You can validate the id_token here if required
-        pass
+   
 
     # Continue with token exchange using the code
     token_url = 'https://api-nomatls.apicentre.middleware.co.nz/middleware-nz-sandbox/v1.0/token'
