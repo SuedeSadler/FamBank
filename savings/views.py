@@ -99,6 +99,10 @@ def start_oauth(request):
 def oauth_callback(request):
     
 
+    # Get the authorization code from the callback
+    code = request.GET.get('code')
+   
+
     # Token exchange URL
     token_url = 'https://api-nomatls.apicentre.middleware.co.nz/middleware-nz-sandbox/v1.0/oauth/token'
     
@@ -133,7 +137,6 @@ def oauth_callback(request):
     else:
         # Handle error from the token exchange step
         return HttpResponse(f"Token exchange failed: {response.text}", status=response.status_code)
-    
 # def oauth_callback(request):
 #     # Check for error parameters in the callback URL
 #     error = request.GET.get('error')
