@@ -1,4 +1,5 @@
 from cryptography.hazmat.primitives.serialization import load_pem_private_key
+from cryptography.hazmat.backends import default_backend
 from django.shortcuts import redirect, render
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
@@ -26,57 +27,64 @@ from django.shortcuts import redirect
 from urllib.parse import urlencode
 import jwt
 import datetime
-from cryptography.hazmat.primitives import serialization
-from cryptography.hazmat.backends import default_backend
+import secrets
 
 def generate_jwt():
     private_key = settings.PRIVATE_KEY
 
-    # Load private key if it's in string format
+    # Ensure private key is in bytes
     if isinstance(private_key, str):
         private_key = private_key.encode('utf-8')
 
-    # Load private key using the serialization module
-    private_key_obj = serialization.load_pem_private_key(private_key, password=None, backend=default_backend())
+    # Load the private key object
+    private_key_obj = load_pem_private_key(private_key, password=None, backend=default_backend())
 
     client_id = settings.CLIENT_ID
 
+    # Generate a random nonce and state
+    nonce = secrets.token_hex(16)
+    state = secrets.token_hex(16)
+
+    # Define the payload for the JWT
     payload = {
-        "iss": client_id,  # The client_id
-        "aud": "https://api-nomatls.apicentre.middleware.co.nz",  # The API provider audience URL
-        "exp": datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(minutes=5),
-        "nbf": datetime.datetime.now(datetime.timezone.utc),
-        "scope": "openid accounts",  # Make sure this matches the query param scope
-        "response_type": "code id_token",
-        "redirect_uri": "https://ropuapp-ekbhcfaseqf2gjh3.australiacentral-01.azurewebsites.net/oauth/callback/",  # Must match exactly with the one registered
-        "client_id": client_id,
-        "nonce": "unique_nonce_value",  # Replace with a unique nonce generator
-        "state": "unique_state_value",  # Optional, replace with a unique state generator if used
-        # Add other required fields if any, such as the Intent Identifier
+        "iss": client_id,  # Client ID provided by the API provider
+        "aud": "https://api-nomatls.apicentre.middleware.co.nz",  # Audience
+        "exp": datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(minutes=5),  # Expiration time
+        "nbf": datetime.datetime.now(datetime.timezone.utc),  # Not before time
+        "scope": "openid accounts",  # Scope for account information
+        "response_type": "code id_token",  # Response type as per the documentation
+        "redirect_uri": "https://ropuapp-ekbhcfaseqf2gjh3.australiacentral-01.azurewebsites.net/oauth/callback/",  # Replace with your actual callback URL
+        "client_id": client_id,  # Client ID from settings
+        "nonce": nonce,  # Unique nonce to prevent replay attacks
+        "state": state  # Optional state to track the request
     }
 
-    # Sign the JWT with the private key
-    token = jwt.encode(payload, private_key_obj, algorithm='RS256')
+    # Sign the JWT using the loaded private key
+    headers = {
+        "kid": settings.KEY_ID  # Use the Key ID if required by the API
+    }
 
-    return token
+    token = jwt.encode(payload, private_key_obj, algorithm='RS256', headers=headers)
+
+    return token, nonce, state
 
 def start_oauth(request):
     base_url = "https://api-nomatls.apicentre.middleware.co.nz/middleware-nz-sandbox/v1.0/oauth/authorize"
     
-    # Get your JWT
-    jwt_token = generate_jwt()
-    print(jwt_token)  # Add this line after generating the token
+    # Generate JWT
+    jwt_token, nonce, state = generate_jwt()
+
     client_id = settings.CLIENT_ID
     redirect_url = 'https://ropuapp-ekbhcfaseqf2gjh3.australiacentral-01.azurewebsites.net/oauth/callback/'  # Your registered callback URL
     
     params = {
-        "scope": "openid accounts",  # or "openid payments"
+        "scope": "openid accounts",  # or "openid payments" if you're doing payments
         "response_type": "code id_token",
         "client_id": client_id,
         "redirect_uri": redirect_url,
-        "request": jwt_token,
-        "nonce": "your_random_nonce",
-        "state": "your_state",
+        "request": jwt_token,  # The JWT you just generated
+        "nonce": nonce,  # Replace with a unique nonce
+        "state": state,  # Replace with a unique state
         "Intent Identifier": "your_account_request_id_or_payment_id"
     }
     
