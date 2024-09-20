@@ -33,7 +33,7 @@ import base64
 def generate_jwt():
     private_key = settings.PRIVATE_KEY
 
-    # Ensure private key is in bytes
+    # Ensure the private key is in bytes
     if isinstance(private_key, str):
         private_key = private_key.encode('utf-8')
 
@@ -54,7 +54,7 @@ def generate_jwt():
         "nbf": datetime.datetime.now(datetime.timezone.utc),  # Not before time
         "scope": "openid accounts",  # Scope for account information
         "response_type": "code id_token",  # Response type as per the documentation
-        "redirect_uri": "https://ropuapp-ekbhcfaseqf2gjh3.australiacentral-01.azurewebsites.net/oauth/callback/",  # Replace with your actual callback URL
+        "redirect_uri": "https://ropuapp-ekbhcfaseqf2gjh3.australiacentral-01.azurewebsites.net/oauth/callback/",  # Your actual callback URL
         "client_id": client_id,  # Client ID from settings
         "nonce": nonce,  # Unique nonce to prevent replay attacks
         "state": state  # Optional state to track the request
@@ -74,10 +74,8 @@ def start_oauth(request):
     
     # Generate JWT
     jwt_token, nonce, state = generate_jwt()
-    # Display the token in the browser for debugging
-    #return HttpResponse(f"Generated JWT Token: {jwt_token}")
     
-    # Store the state in the session to compare it later in the callback
+    # Store the state in the session to compare it later in the callback (CSRF prevention)
     request.session['oauth_state'] = state
 
     client_id = settings.CLIENT_ID
@@ -99,23 +97,21 @@ def start_oauth(request):
     
     return redirect(auth_url)
 
+
 def oauth_callback(request):
-    
+    # Validate the state parameter
     state = request.GET.get('state')
-    # Get the authorization code from the callback
-    code = request.GET.get('code')
-    # Validate that the state is the same as the one you sent
-    # This prevents CSRF attacks
     if not state or state != request.session.get('oauth_state'):
         return HttpResponse("Invalid state parameter.", status=400)
-    
+
+    # Get the authorization code from the callback
+    code = request.GET.get('code')
     if not code:
         return HttpResponse("Authorization code not found.", status=400)
-   
 
     # Token exchange URL
     token_url = 'https://api-nomatls.apicentre.middleware.co.nz/middleware-nz-sandbox/v1.0/oauth/token'
-    
+
     # Get client_id and client_secret from settings
     client_id = settings.CLIENT_ID
     client_secret = settings.CLIENT_SECRET
@@ -134,7 +130,7 @@ def oauth_callback(request):
     data = {
         'grant_type': 'authorization_code',
         'code': code,
-        'redirect_uri': 'https://ropuapp-ekbhcfaseqf2gjh3.australiacentral-01.azurewebsites.net/oauth/callback/',  # Your registered callback URL
+        'redirect_uri': 'https://ropuapp-ekbhcfaseqf2gjh3.australiacentral-01.azurewebsites.net/oauth/callback/',  # Your callback URL
     }
 
     # Make the POST request to exchange the authorization code for an access token
@@ -147,6 +143,7 @@ def oauth_callback(request):
     else:
         # Handle error from the token exchange step
         return HttpResponse(f"Token exchange failed: {response.text}", status=response.status_code)
+
 # def oauth_callback(request):
 #     # Check for error parameters in the callback URL
 #     error = request.GET.get('error')
